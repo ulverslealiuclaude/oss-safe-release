@@ -1,12 +1,12 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { discoverRepoFiles } from "../src/files";
 
 describe("discoverRepoFiles", () => {
   it("loads relevant repository files and excludes generated directories", async () => {
-    const root = join(process.cwd(), "tests/fixtures/file-discovery");
-    await rm(root, { recursive: true, force: true });
+    const root = await mkdtemp(join(tmpdir(), "oss-safe-release-file-discovery-"));
     await mkdir(join(root, ".github/workflows"), { recursive: true });
     await mkdir(join(root, "node_modules/pkg"), { recursive: true });
     await writeFile(join(root, ".github/workflows/ci.yml"), "name: ci\n");
@@ -19,5 +19,7 @@ describe("discoverRepoFiles", () => {
     expect(paths).toContain(".github/workflows/ci.yml");
     expect(paths).toContain(".gitignore");
     expect(paths).not.toContain("node_modules/pkg/index.js");
+
+    await rm(root, { recursive: true, force: true });
   });
 });

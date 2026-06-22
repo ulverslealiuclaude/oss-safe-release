@@ -1,12 +1,12 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { scanRepository } from "../src/scanner";
 
 describe("scanRepository", () => {
   it("returns findings from all built-in rules", async () => {
-    const root = join(process.cwd(), "tests/fixtures/scanner");
-    await rm(root, { recursive: true, force: true });
+    const root = await mkdtemp(join(tmpdir(), "oss-safe-release-scanner-"));
     await mkdir(join(root, ".github/workflows"), { recursive: true });
     await writeFile(
       join(root, ".github/workflows/ci.yml"),
@@ -23,5 +23,7 @@ describe("scanRepository", () => {
         "secrets.sensitive-file-committed",
       ]),
     );
+
+    await rm(root, { recursive: true, force: true });
   });
 });
