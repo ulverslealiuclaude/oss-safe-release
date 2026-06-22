@@ -1,0 +1,7 @@
+node_modules/
+dist/
+work/
+safe-release-report.md
+safe-release-report.json
+.env
+.env.*

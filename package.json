@@ -2,7 +2,7 @@
   "name": "oss-safe-release",
   "version": "0.1.0",
   "description": "Local-first OSS maintainer safety checks for GitHub Actions, releases, and secrets.",
-  "type": "module",
+  "type": "commonjs",
   "bin": {
     "oss-safe-release": "./dist/src/cli.js"
   },
