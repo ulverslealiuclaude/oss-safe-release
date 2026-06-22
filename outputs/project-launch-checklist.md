@@ -5,8 +5,8 @@
 - GitHub username: `ulverslealiuclaude`
 - Decision: personal repository or organization repository: personal repository assumed
 - Public repository URL after creation: `https://github.com/ulverslealiuclaude/oss-safe-release`
-- ChatGPT account email for the application form: pending confirmation
-- OpenAI organization ID from the OpenAI Platform: pending
+- ChatGPT account email for the application form: submitted with real account email; do not store in repo.
+- OpenAI organization ID from the OpenAI Platform: submitted; do not store full ID in repo.
 - Decision: publish npm package now or keep GitHub-only for first release
 - npm username, if publishing to npm
 
@@ -62,4 +62,4 @@ node dist/src/cli.js scan . --markdown work/self-report.md --json work/self-repo
 
 ## Codex for OSS Submission Timing
 
-Best timing is after the repository is public, CI is passing, and at least one real example report or user feedback item exists. If the activity window feels uncertain, submit once the public repository and first release are ready, then continue improving the project while waiting for review.
+Application submitted on 2026-06-23 with the public repository URL and real account details. Next steps while waiting for review: keep the repository active, add project topics, create a first release, produce an example report, and avoid duplicate submissions unless OpenAI asks for more information.

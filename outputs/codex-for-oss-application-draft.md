@@ -12,9 +12,9 @@ Maintainer GitHub username: `ulverslealiuclaude`
 
 Maintainer role: Primary maintainer and project owner.
 
-ChatGPT account email: `[confirm before submission; GitHub profile email is ulversleaping9@gmail.com]`
+ChatGPT account email: submitted with real ChatGPT account email; not stored in repo.
 
-OpenAI Organization ID: `[fill before submission]`
+OpenAI Organization ID: submitted; full organization ID not stored in repo.
 
 ## Short Description
 
@@ -44,9 +44,9 @@ The project is useful for small and medium OSS repositories that want practical 
 
 ## Evidence To Add Before Submission
 
-- Public GitHub repository URL
-- ChatGPT account email
-- OpenAI Organization ID
+- Public GitHub repository URL: complete
+- ChatGPT account email: submitted, not stored in repo
+- OpenAI Organization ID: submitted, not stored in repo
 - npm package URL, if published
 - GitHub stars
 - npm download count
