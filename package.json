@@ -1,0 +1,34 @@
+{
+  "name": "oss-safe-release",
+  "version": "0.1.0",
+  "description": "Local-first OSS maintainer safety checks for GitHub Actions, releases, and secrets.",
+  "type": "module",
+  "bin": {
+    "oss-safe-release": "./dist/src/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "open-source",
+    "github-actions",
+    "security",
+    "release",
+    "cli"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "fast-glob": "^3.3.2",
+    "yaml": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
