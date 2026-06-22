@@ -1,10 +1,11 @@
 import { discoverRepoFiles } from "./files";
+import { releaseRule } from "./rules/release";
 import { secretsRule } from "./rules/secrets";
 import { workflowActionsRule } from "./rules/workflow-actions";
 import type { Finding, RepoContext, Rule, Severity } from "./types";
 import { parseWorkflowFiles } from "./workflows";
 
-const BUILT_IN_RULES: Rule[] = [workflowActionsRule, secretsRule];
+const BUILT_IN_RULES: Rule[] = [workflowActionsRule, secretsRule, releaseRule];
 const SEVERITY_ORDER: Record<Severity, number> = { critical: 0, high: 1, medium: 2, low: 3 };
 
 export interface ScanResult {
