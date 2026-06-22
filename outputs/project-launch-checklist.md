@@ -2,11 +2,11 @@
 
 ## Required From User
 
-- GitHub username
-- Decision: personal repository or organization repository
-- Public repository URL after creation
-- ChatGPT account email for the application form
-- OpenAI organization ID from the OpenAI Platform
+- GitHub username: `ulverslealiuclaude`
+- Decision: personal repository or organization repository: personal repository assumed
+- Public repository URL after creation: `https://github.com/ulverslealiuclaude/oss-safe-release`
+- ChatGPT account email for the application form: pending confirmation
+- OpenAI organization ID from the OpenAI Platform: pending
 - Decision: publish npm package now or keep GitHub-only for first release
 - npm username, if publishing to npm
 
@@ -24,11 +24,12 @@
 
 ## Before GitHub Publication
 
-- Rename branch from `master` to `main`.
+- Rename branch from `master` to `main`: complete locally.
+- Create the public GitHub repository `ulverslealiuclaude/oss-safe-release`.
 - Confirm package name is available on npm.
-- Update repository links in `package.json` after GitHub repo exists.
-- Replace placeholder maintainer details in application draft.
-- Run final verification:
+- Update repository links in `package.json`: complete with target GitHub URL.
+- Replace placeholder maintainer details in application draft: partially complete; ChatGPT email and OpenAI Organization ID remain.
+- Run final verification: complete on 2026-06-23.
 
 ```bash
 pnpm test

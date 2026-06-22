@@ -6,11 +6,15 @@ Use this draft after the repository is public and has its real GitHub URL.
 
 Project name: `oss-safe-release`
 
-Repository URL: `[fill after GitHub publication]`
+Repository URL: `https://github.com/ulverslealiuclaude/oss-safe-release`
 
-Maintainer GitHub username: `[your GitHub username]`
+Maintainer GitHub username: `ulverslealiuclaude`
 
 Maintainer role: Primary maintainer and project owner.
+
+ChatGPT account email: `[confirm before submission; GitHub profile email is ulversleaping9@gmail.com]`
+
+OpenAI Organization ID: `[fill before submission]`
 
 ## Short Description
 
@@ -36,10 +40,13 @@ The project is useful for small and medium OSS repositories that want practical 
 - Release workflow risk checks
 - Test suite and CI
 - MIT license, contribution guide, security policy, and roadmap
+- Local verification on 2026-06-23: `pnpm test`, `pnpm run build`, `pnpm run lint`, and `node dist/src/cli.js scan .` all passed
 
 ## Evidence To Add Before Submission
 
 - Public GitHub repository URL
+- ChatGPT account email
+- OpenAI Organization ID
 - npm package URL, if published
 - GitHub stars
 - npm download count
