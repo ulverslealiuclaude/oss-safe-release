@@ -1,0 +1,7 @@
+name: oss-safe-release
+description: Run oss-safe-release checks in a GitHub Actions workflow.
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: npx oss-safe-release scan
