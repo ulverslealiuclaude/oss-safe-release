@@ -25,7 +25,7 @@
 ## Before GitHub Publication
 
 - Rename branch from `master` to `main`: complete locally.
-- Create the public GitHub repository `ulverslealiuclaude/oss-safe-release`.
+- Create the public GitHub repository `ulverslealiuclaude/oss-safe-release`: complete.
 - Confirm package name is available on npm.
 - Update repository links in `package.json`: complete with target GitHub URL.
 - Replace placeholder maintainer details in application draft: partially complete; ChatGPT email and OpenAI Organization ID remain.
@@ -40,8 +40,8 @@ node dist/src/cli.js scan . --markdown work/self-report.md --json work/self-repo
 
 ## First GitHub Release
 
-- Create public repository.
-- Push local git history.
+- Create public repository: complete.
+- Push local git history to `origin/main`: complete.
 - Confirm CI passes.
 - Add repository topics:
   - `github-actions`
