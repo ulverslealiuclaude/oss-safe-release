@@ -1,0 +1,5 @@
+permissions: write-all
+jobs:
+  test:
+    steps:
+      - uses: actions/checkout@main
