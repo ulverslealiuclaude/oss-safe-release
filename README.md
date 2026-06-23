@@ -6,6 +6,7 @@ Local-first safety checks for open-source maintainers before a pull request or r
 
 - GitHub Actions that use mutable action refs such as `@main`, `@master`, or short `@v1` tags.
 - Workflows that grant `permissions: write-all`.
+- `pull_request_target` workflows that appear to check out or execute repository code.
 - Sensitive files such as `.env`, `.npmrc`, `.pypirc`, `*.pem`, and `*.key`.
 - Missing `.gitignore` coverage for local environment files.
 - Package publishing commands that can run from pull request workflows.
@@ -103,6 +104,7 @@ jobs:
 | --- | --- | --- |
 | `workflow.mutable-action-ref` | high | Flags actions pinned to mutable refs. |
 | `workflow.write-all-permissions` | critical | Flags workflows with broad write token permissions. |
+| `workflow.pull-request-target-executes-code` | high | Flags `pull_request_target` workflows that appear to execute repository code. |
 | `secrets.sensitive-file-committed` | critical | Flags sensitive files committed to the repository. |
 | `secrets.gitignore-missing-env` | medium | Flags missing `.env` coverage in `.gitignore`. |
 | `release.publish-on-pull-request` | critical | Flags package publishing in pull request workflows. |

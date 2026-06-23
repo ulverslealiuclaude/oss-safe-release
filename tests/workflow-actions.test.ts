@@ -49,4 +49,29 @@ describe("workflowActionsRule", () => {
       }),
     );
   });
+
+  it("flags pull_request_target workflows that execute repository code", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/pr-target.yml",
+          content:
+            "on: pull_request_target\njobs:\n  test:\n    steps:\n      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608\n      - run: pnpm test\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.pull-request-target-executes-code",
+        severity: "high",
+        filePath: ".github/workflows/pr-target.yml",
+      }),
+    );
+  });
 });

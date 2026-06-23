@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - Added the initial `oss-safe-release` CLI.
 - Added deterministic checks for GitHub Actions mutable refs and `write-all` permissions.
+- Added detection for `pull_request_target` workflows that appear to execute repository code.
 - Added committed secret file and `.gitignore` coverage checks.
 - Added release workflow checks for package publishing from pull request workflows.
 - Added Markdown and JSON report output.

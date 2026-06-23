@@ -37,6 +37,21 @@ export const workflowActionsRule: Rule = {
           recommendation: "Use least-privilege permissions such as contents: read unless write access is required.",
         });
       }
+
+      const usesPullRequestTarget = /on:\s*pull_request_target\b/.test(workflow.content) || /-\s*pull_request_target\b/.test(workflow.content);
+      const executesRepositoryCode = /uses:\s*actions\/checkout@/i.test(workflow.content) || /^\s*-\s*run:\s+/m.test(workflow.content);
+
+      if (usesPullRequestTarget && executesRepositoryCode) {
+        findings.push({
+          ruleId: "workflow.pull-request-target-executes-code",
+          severity: "high",
+          title: "pull_request_target workflow appears to execute repository code",
+          message: "pull_request_target runs with privileged context and should not execute untrusted pull request code.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, "pull_request_target"),
+          recommendation: "Use pull_request for untrusted code, or avoid checkout and shell execution in pull_request_target workflows.",
+        });
+      }
     }
 
     return findings;
