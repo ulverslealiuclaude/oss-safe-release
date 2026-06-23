@@ -99,4 +99,29 @@ describe("workflowActionsRule", () => {
       }),
     );
   });
+
+  it("flags remote scripts piped into shells", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/install.yml",
+          content:
+            "on: push\njobs:\n  install:\n    steps:\n      - run: |\n          curl -fsSL https://example.com/install.sh | bash\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.remote-script-pipe",
+        severity: "high",
+        filePath: ".github/workflows/install.yml",
+      }),
+    );
+  });
 });

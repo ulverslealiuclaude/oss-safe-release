@@ -3,6 +3,7 @@ import { findLine } from "../workflows";
 
 const MUTABLE_REFS = ["main", "master", "HEAD"];
 const UNTRUSTED_CONTEXT_IN_RUN = /\brun:\s*.*\$\{\{\s*(github\.event|github\.head_ref|github\.base_ref)\b/;
+const REMOTE_SCRIPT_PIPE = /\b(?:curl|wget)\b[^\n|]*https?:\/\/[^\n|]+\|\s*(?:sudo\s+)?(?:bash|sh)\b/i;
 
 export const workflowActionsRule: Rule = {
   id: "workflow-actions",
@@ -64,6 +65,19 @@ export const workflowActionsRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, untrustedRunLine),
           recommendation: "Pass untrusted context through an environment variable and quote it safely inside the script.",
+        });
+      }
+
+      const remoteScriptPipeLine = workflow.content.split(/\r?\n/).find((line) => REMOTE_SCRIPT_PIPE.test(line));
+      if (remoteScriptPipeLine) {
+        findings.push({
+          ruleId: "workflow.remote-script-pipe",
+          severity: "high",
+          title: "Workflow pipes a remote script into a shell",
+          message: "The workflow downloads a remote script and executes it directly, which can run changed code without review.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, remoteScriptPipeLine),
+          recommendation: "Pin and verify installer contents, or vendor reviewed scripts into the repository before executing them.",
         });
       }
     }

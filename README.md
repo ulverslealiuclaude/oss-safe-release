@@ -134,6 +134,7 @@ jobs:
 | `workflow.write-all-permissions` | critical | Flags workflows with broad write token permissions. |
 | `workflow.pull-request-target-executes-code` | high | Flags `pull_request_target` workflows that appear to execute repository code. |
 | `workflow.untrusted-context-in-run` | high | Flags shell steps that directly interpolate untrusted GitHub event context. |
+| `workflow.remote-script-pipe` | high | Flags workflows that pipe remote installer scripts directly into a shell. |
 | `secrets.sensitive-file-committed` | critical | Flags sensitive files committed to the repository. |
 | `secrets.gitignore-missing-env` | medium | Flags missing `.env` coverage in `.gitignore`. |
 | `release.publish-on-pull-request` | critical | Flags package publishing in pull request workflows. |
