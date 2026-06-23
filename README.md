@@ -140,6 +140,7 @@ jobs:
 | `secrets.gitignore-missing-env` | medium | Flags missing `.env` coverage in `.gitignore`. |
 | `release.publish-on-pull-request` | critical | Flags package publishing in pull request workflows. |
 | `release.publish-without-trusted-gate` | high | Flags push-triggered package publishing without a trusted release gate. |
+| `release.manual-publish-without-approval` | medium | Flags manual package publishing without a protected environment or confirmation input. |
 
 ## Limitations
 

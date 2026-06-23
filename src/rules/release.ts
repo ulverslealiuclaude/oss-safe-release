@@ -9,6 +9,7 @@ export const releaseRule: Rule = {
     for (const workflow of context.workflows) {
       const hasPullRequestTrigger = /on:\s*pull_request\b/.test(workflow.content) || /-\s*pull_request\b/.test(workflow.content);
       const hasPushTrigger = /on:\s*push\b/.test(workflow.content) || /-\s*push\b/.test(workflow.content);
+      const hasWorkflowDispatchTrigger = /on:\s*workflow_dispatch\b/.test(workflow.content) || /-\s*workflow_dispatch\b/.test(workflow.content);
       const publishesPackage = /\b(npm publish|pnpm publish|yarn npm publish|twine upload|cargo publish)\b/.test(workflow.content);
 
       if (!publishesPackage) continue;
@@ -35,6 +36,22 @@ export const releaseRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, "publish"),
           recommendation: "Restrict publishing to trusted release events, version tags, protected branches, or explicit github.ref conditions.",
+        });
+      }
+
+      const hasEnvironmentGate = /\benvironment:\s*[^\s#]+/.test(workflow.content);
+      const hasConfirmationInput = /\b(confirm|confirmation|approve|approval):\s*\n|\b(confirm|confirmation|approve|approval):\s*[^\n]+/.test(
+        workflow.content,
+      );
+      if (hasWorkflowDispatchTrigger && !hasEnvironmentGate && !hasConfirmationInput) {
+        findings.push({
+          ruleId: "release.manual-publish-without-approval",
+          severity: "medium",
+          title: "Manual package publishing lacks an approval gate",
+          message: "A workflow_dispatch release workflow publishes a package without an environment gate or confirmation input.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, "workflow_dispatch"),
+          recommendation: "Use a protected GitHub environment or require an explicit confirmation input before publishing.",
         });
       }
     }

@@ -49,4 +49,50 @@ describe("releaseRule", () => {
       }),
     );
   });
+
+  it("flags manual package publishing without an environment or confirmation input", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/manual-publish.yml",
+          content: "on: workflow_dispatch\njobs:\n  publish:\n    steps:\n      - run: npm publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.manual-publish-without-approval",
+        severity: "medium",
+        filePath: ".github/workflows/manual-publish.yml",
+      }),
+    );
+  });
+
+  it("does not flag manual package publishing with a protected environment", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/manual-publish.yml",
+          content: "on: workflow_dispatch\njobs:\n  publish:\n    environment: npm-release\n    steps:\n      - run: npm publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.manual-publish-without-approval",
+      }),
+    );
+  });
 });
