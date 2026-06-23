@@ -4,6 +4,11 @@ import { findLine } from "../workflows";
 const MUTABLE_REFS = ["main", "master", "HEAD"];
 const UNTRUSTED_CONTEXT_IN_RUN = /\brun:\s*.*\$\{\{\s*(github\.event|github\.head_ref|github\.base_ref)\b/;
 const REMOTE_SCRIPT_PIPE = /\b(?:curl|wget)\b[^\n|]*https?:\/\/[^\n|]+\|\s*(?:sudo\s+)?(?:bash|sh)\b/i;
+const PACKAGE_NAME = "(?:@[a-z0-9_.-]+\\/)?[a-z0-9_.-]+";
+const UNPINNED_GLOBAL_INSTALL = new RegExp(
+  `\\b(?:(?:npm|pnpm)\\s+(?:install|i|add)\\s+(?:--global|-g)\\s+${PACKAGE_NAME}|yarn\\s+global\\s+add\\s+${PACKAGE_NAME})(?:\\s|$)`,
+  "i",
+);
 
 export const workflowActionsRule: Rule = {
   id: "workflow-actions",
@@ -78,6 +83,19 @@ export const workflowActionsRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, remoteScriptPipeLine),
           recommendation: "Pin and verify installer contents, or vendor reviewed scripts into the repository before executing them.",
+        });
+      }
+
+      const unpinnedGlobalInstallLine = workflow.content.split(/\r?\n/).find((line) => UNPINNED_GLOBAL_INSTALL.test(line));
+      if (unpinnedGlobalInstallLine) {
+        findings.push({
+          ruleId: "workflow.unpinned-global-install",
+          severity: "medium",
+          title: "Workflow installs a global tool without a fixed version",
+          message: "The workflow installs a global package without pinning its version, which can change CI or release behavior unexpectedly.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, unpinnedGlobalInstallLine),
+          recommendation: "Pin global tools to an explicit version, or use a lockfile-backed project dependency.",
         });
       }
     }

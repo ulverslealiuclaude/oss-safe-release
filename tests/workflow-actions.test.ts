@@ -124,4 +124,50 @@ describe("workflowActionsRule", () => {
       }),
     );
   });
+
+  it("flags unpinned global tool installs in workflows", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/release.yml",
+          content: "on: push\njobs:\n  release:\n    steps:\n      - run: npm install -g semantic-release\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.unpinned-global-install",
+        severity: "medium",
+        filePath: ".github/workflows/release.yml",
+      }),
+    );
+  });
+
+  it("does not flag pinned global tool installs", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/release.yml",
+          content: "on: push\njobs:\n  release:\n    steps:\n      - run: npm install -g semantic-release@21.1.2\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.unpinned-global-install",
+      }),
+    );
+  });
 });
