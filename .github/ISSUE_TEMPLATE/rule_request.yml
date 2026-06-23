@@ -1,0 +1,38 @@
+name: Rule request
+description: Suggest a new maintainer safety rule for GitHub Actions, releases, or secret hygiene.
+title: "rule: "
+labels: ["rule-request"]
+body:
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk to detect
+      description: What maintainer or release safety risk should this rule catch?
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Example pattern
+      description: Provide a sanitized workflow, config, or file pattern that should be flagged.
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommended fix
+      description: What should maintainers do when this rule fires?
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Suggested severity
+      options:
+        - low
+        - medium
+        - high
+        - critical
+    validations:
+      required: true

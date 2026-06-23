@@ -1,0 +1,37 @@
+name: False positive
+description: Report a finding that is noisy, incorrect, or not actionable for maintainers.
+title: "false positive: "
+labels: ["false-positive"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include secrets, private tokens, or confidential repository contents. Sanitized snippets are enough.
+  - type: input
+    id: rule
+    attributes:
+      label: Rule ID
+      description: Which rule produced the finding?
+      placeholder: "workflow.mutable-action-ref"
+    validations:
+      required: true
+  - type: textarea
+    id: finding
+    attributes:
+      label: Finding output
+      description: Paste the sanitized finding or report excerpt.
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: why-safe
+    attributes:
+      label: Why is this safe or intentional?
+      description: Explain why the flagged pattern should not be reported in this case.
+    validations:
+      required: true
+  - type: textarea
+    id: suggested
+    attributes:
+      label: Suggested rule change
+      description: If you have one, suggest how the rule should distinguish this case.

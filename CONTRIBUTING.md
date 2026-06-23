@@ -23,3 +23,11 @@ Each finding should include a stable rule id, severity, title, message, location
 ## Rule Quality
 
 Good rules are high signal, explainable, and easy for maintainers to act on. Avoid broad pattern matching that produces noisy findings without a clear fix.
+
+## Reporting False Positives
+
+False-positive reports should include the rule id, sanitized finding output, and why the flagged pattern is safe or intentional. Do not include secrets, private repository contents, or credentials.
+
+## Requesting Rules
+
+Rule requests should describe the maintainer risk, provide a sanitized example pattern, and include the recommended fix a maintainer should apply.
