@@ -7,4 +7,11 @@ describe("createProgram", () => {
 
     expect(program.commands.map((command) => command.name())).toContain("scan");
   });
+
+  it("defines the SARIF report option", () => {
+    const program = createProgram();
+    const scanCommand = program.commands.find((command) => command.name() === "scan");
+
+    expect(scanCommand?.options.map((option) => option.long)).toContain("--sarif");
+  });
 });

@@ -5,6 +5,7 @@ import { Command } from "commander";
 import { renderConsoleSummary } from "./reporters/console";
 import { renderJsonReport } from "./reporters/json";
 import { renderMarkdownReport } from "./reporters/markdown";
+import { renderSarifReport } from "./reporters/sarif";
 import { scanRepository } from "./scanner";
 
 export function createProgram(): Command {
@@ -17,11 +18,15 @@ export function createProgram(): Command {
     .argument("[path]", "repository path", ".")
     .option("--markdown <path>", "write Markdown report", "safe-release-report.md")
     .option("--json <path>", "write JSON report", "safe-release-report.json")
-    .action(async (targetPath: string, options: { markdown: string; json: string }) => {
+    .option("--sarif <path>", "write SARIF report for code scanning")
+    .action(async (targetPath: string, options: { markdown: string; json: string; sarif?: string }) => {
       const rootDir = resolve(targetPath);
       const result = await scanRepository(rootDir);
       await writeFile(resolve(rootDir, options.markdown), renderMarkdownReport(result.findings));
       await writeFile(resolve(rootDir, options.json), renderJsonReport(result.findings));
+      if (options.sarif !== undefined) {
+        await writeFile(resolve(rootDir, options.sarif), renderSarifReport(result.findings));
+      }
       process.stdout.write(renderConsoleSummary(result.findings));
       process.exitCode = result.findings.some((finding) => finding.severity === "critical" || finding.severity === "high") ? 1 : 0;
     });

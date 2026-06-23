@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { renderJsonReport } from "../src/reporters/json";
 import { renderMarkdownReport } from "../src/reporters/markdown";
+import { renderSarifReport } from "../src/reporters/sarif";
 import type { Finding } from "../src/types";
 
 const findings: Finding[] = [
@@ -28,5 +29,17 @@ describe("reporters", () => {
     const json = JSON.parse(renderJsonReport(findings));
 
     expect(json.findings[0].ruleId).toBe("workflow.mutable-action-ref");
+  });
+
+  it("renders SARIF reports for GitHub code scanning", () => {
+    const sarif = JSON.parse(renderSarifReport(findings));
+
+    expect(sarif.version).toBe("2.1.0");
+    expect(sarif.runs[0].tool.driver.name).toBe("oss-safe-release");
+    expect(sarif.runs[0].tool.driver.rules[0].id).toBe("workflow.mutable-action-ref");
+    expect(sarif.runs[0].results[0].ruleId).toBe("workflow.mutable-action-ref");
+    expect(sarif.runs[0].results[0].level).toBe("error");
+    expect(sarif.runs[0].results[0].locations[0].physicalLocation.artifactLocation.uri).toBe(".github/workflows/ci.yml");
+    expect(sarif.runs[0].results[0].locations[0].physicalLocation.region.startLine).toBe(4);
   });
 });

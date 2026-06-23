@@ -47,10 +47,10 @@ npx oss-safe-release scan ../some-repo
 Write reports to custom paths:
 
 ```bash
-npx oss-safe-release scan . --markdown reports/safe-release.md --json reports/safe-release.json
+npx oss-safe-release scan . --markdown reports/safe-release.md --json reports/safe-release.json --sarif reports/safe-release.sarif
 ```
 
-The CLI exits with code `1` when it finds `high` or `critical` findings. This makes it useful in CI while still producing readable reports for maintainers.
+The CLI exits with code `1` when it finds `high` or `critical` findings. This makes it useful in CI while still producing readable reports for maintainers. SARIF output can be uploaded to GitHub code scanning in repositories that use that workflow.
 
 ## Configuration
 
@@ -86,6 +86,7 @@ This repository includes a clean self-scan example:
 
 - [`examples/self-scan-report.md`](examples/self-scan-report.md)
 - [`examples/self-scan-report.json`](examples/self-scan-report.json)
+- [`examples/self-scan-report.sarif`](examples/self-scan-report.sarif)
 
 ## Release Process
 
