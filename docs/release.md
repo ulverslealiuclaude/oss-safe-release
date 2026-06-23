@@ -10,10 +10,20 @@ Run these commands from the repository root:
 pnpm test
 pnpm run build
 pnpm run lint
-node dist/src/cli.js scan . --markdown examples/self-scan-report.md --json examples/self-scan-report.json
+node dist/src/cli.js scan . --markdown examples/self-scan-report.md --json examples/self-scan-report.json --sarif examples/self-scan-report.sarif --fail-on high
 ```
 
 The self-scan should report zero findings for this repository. If findings appear, fix the repository or document the reason before release.
+
+## v0.1.0 Readiness Checklist
+
+- Confirm `package.json` version is `0.1.0`.
+- Confirm `CHANGELOG.md` has a `0.1.0` section with the current rule set and output formats.
+- Confirm README usage examples mention Markdown, JSON, SARIF, config ignores, and `--fail-on`.
+- Confirm `SECURITY.md`, `CONTRIBUTING.md`, and `LICENSE` are present.
+- Regenerate `examples/self-scan-report.md`, `examples/self-scan-report.json`, and `examples/self-scan-report.sarif` from the verified build.
+- Confirm no account identifiers, tokens, API keys, private emails, or OpenAI organization IDs are committed.
+- Keep the first release GitHub-only unless npm ownership and package publishing credentials are explicitly approved.
 
 ## Version Update
 
@@ -32,6 +42,12 @@ git push origin v0.1.0
 ```
 
 Use the matching `CHANGELOG.md` section as the release notes. Do not publish to npm until package ownership and npm account details are confirmed.
+
+Attach or reference the generated self-scan reports in the release notes when useful:
+
+- `examples/self-scan-report.md`
+- `examples/self-scan-report.json`
+- `examples/self-scan-report.sarif`
 
 ## Post-Release
 
