@@ -60,6 +60,13 @@ The CLI exits with code `1` when it finds `high` or `critical` findings. This ma
 - Recommendation: Pin third-party actions to a full commit SHA and review updates intentionally.
 ```
 
+## Example Reports
+
+This repository includes a clean self-scan example:
+
+- [`examples/self-scan-report.md`](examples/self-scan-report.md)
+- [`examples/self-scan-report.json`](examples/self-scan-report.json)
+
 ## GitHub Actions
 
 After publishing the package, use it in CI:
