@@ -26,4 +26,31 @@ describe("scanRepository", () => {
 
     await rm(root, { recursive: true, force: true });
   });
+
+  it("applies config ignores by rule id and path", async () => {
+    const root = await mkdtemp(join(tmpdir(), "oss-safe-release-config-"));
+    await writeFile(join(root, ".env"), "TOKEN=abc");
+    await writeFile(
+      join(root, "oss-safe-release.config.json"),
+      JSON.stringify({
+        ignore: [{ ruleId: "secrets.sensitive-file-committed", path: ".env" }],
+      }),
+    );
+
+    const result = await scanRepository(root);
+
+    expect(result.findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "secrets.sensitive-file-committed",
+        filePath: ".env",
+      }),
+    );
+    expect(result.findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "secrets.gitignore-missing-env",
+      }),
+    );
+
+    await rm(root, { recursive: true, force: true });
+  });
 });

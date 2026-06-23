@@ -29,3 +29,12 @@ export interface Rule {
   id: string;
   run(context: RepoContext): Finding[];
 }
+
+export interface ScannerConfig {
+  ignore?: IgnoreEntry[];
+}
+
+export interface IgnoreEntry {
+  ruleId: string;
+  path?: string;
+}

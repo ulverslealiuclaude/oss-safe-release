@@ -52,6 +52,23 @@ npx oss-safe-release scan . --markdown reports/safe-release.md --json reports/sa
 
 The CLI exits with code `1` when it finds `high` or `critical` findings. This makes it useful in CI while still producing readable reports for maintainers.
 
+## Configuration
+
+Use `oss-safe-release.config.json` to ignore intentional findings by rule id and, optionally, path:
+
+```json
+{
+  "ignore": [
+    {
+      "ruleId": "secrets.sensitive-file-committed",
+      "path": ".env.example"
+    }
+  ]
+}
+```
+
+Omit `path` to ignore a rule across the repository. Keep ignores narrow and documented so real release risks are not hidden.
+
 ## Example Finding
 
 ```md
