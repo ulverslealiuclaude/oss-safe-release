@@ -52,6 +52,14 @@ npx oss-safe-release scan . --markdown reports/safe-release.md --json reports/sa
 
 The CLI exits with code `1` when it finds `high` or `critical` findings. This makes it useful in CI while still producing readable reports for maintainers. SARIF output can be uploaded to GitHub code scanning in repositories that use that workflow.
 
+Adjust the CI failure threshold:
+
+```bash
+npx oss-safe-release scan . --fail-on medium
+```
+
+Valid thresholds are `low`, `medium`, `high`, `critical`, and `none`. The default is `high`.
+
 ## Configuration
 
 Use `oss-safe-release.config.json` to ignore intentional findings by rule id and, optionally, path:

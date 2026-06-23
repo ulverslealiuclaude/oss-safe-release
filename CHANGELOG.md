@@ -13,5 +13,6 @@ All notable changes to this project will be documented in this file.
 - Added release workflow checks for push-triggered package publishing without trusted gates.
 - Added Markdown and JSON report output.
 - Added optional SARIF report output for GitHub code scanning workflows.
+- Added `--fail-on` to customize CI failure severity thresholds.
 - Added `oss-safe-release.config.json` support for rule and path ignores.
 - Added tests, documentation, CI configuration, and an example self-scan report.
