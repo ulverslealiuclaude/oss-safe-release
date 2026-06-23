@@ -74,4 +74,29 @@ describe("workflowActionsRule", () => {
       }),
     );
   });
+
+  it("flags untrusted GitHub context interpolation in run steps", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/comment.yml",
+          content:
+            "on: pull_request\njobs:\n  test:\n    steps:\n      - run: echo \"${{ github.event.pull_request.title }}\"\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.untrusted-context-in-run",
+        severity: "high",
+        filePath: ".github/workflows/comment.yml",
+      }),
+    );
+  });
 });

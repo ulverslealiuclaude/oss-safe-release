@@ -2,6 +2,7 @@ import type { Finding, Rule } from "../types";
 import { findLine } from "../workflows";
 
 const MUTABLE_REFS = ["main", "master", "HEAD"];
+const UNTRUSTED_CONTEXT_IN_RUN = /\brun:\s*.*\$\{\{\s*(github\.event|github\.head_ref|github\.base_ref)\b/;
 
 export const workflowActionsRule: Rule = {
   id: "workflow-actions",
@@ -50,6 +51,19 @@ export const workflowActionsRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, "pull_request_target"),
           recommendation: "Use pull_request for untrusted code, or avoid checkout and shell execution in pull_request_target workflows.",
+        });
+      }
+
+      const untrustedRunLine = workflow.content.split(/\r?\n/).find((line) => UNTRUSTED_CONTEXT_IN_RUN.test(line));
+      if (untrustedRunLine) {
+        findings.push({
+          ruleId: "workflow.untrusted-context-in-run",
+          severity: "high",
+          title: "Run step interpolates untrusted GitHub context",
+          message: "A shell command directly interpolates event-controlled GitHub context, which can allow script injection.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, untrustedRunLine),
+          recommendation: "Pass untrusted context through an environment variable and quote it safely inside the script.",
         });
       }
     }
