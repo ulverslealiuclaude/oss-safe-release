@@ -100,6 +100,10 @@ This repository includes a clean self-scan example:
 
 Release preparation is documented in [`docs/release.md`](docs/release.md). The first release should remain GitHub-only until npm ownership and package publishing details are confirmed.
 
+## Security
+
+Security reporting and scanner limitations are documented in [`SECURITY.md`](SECURITY.md).
+
 ## GitHub Actions
 
 After publishing the package, use it in CI:
