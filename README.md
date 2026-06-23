@@ -67,6 +67,10 @@ This repository includes a clean self-scan example:
 - [`examples/self-scan-report.md`](examples/self-scan-report.md)
 - [`examples/self-scan-report.json`](examples/self-scan-report.json)
 
+## Release Process
+
+Release preparation is documented in [`docs/release.md`](docs/release.md). The first release should remain GitHub-only until npm ownership and package publishing details are confirmed.
+
 ## GitHub Actions
 
 After publishing the package, use it in CI:
