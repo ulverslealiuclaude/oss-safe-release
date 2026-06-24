@@ -31,3 +31,7 @@ False-positive reports should include the rule id, sanitized finding output, and
 ## Requesting Rules
 
 Rule requests should describe the maintainer risk, provide a sanitized example pattern, and include the recommended fix a maintainer should apply.
+
+## Triage Process
+
+Maintainer triage priorities and handling guidance are documented in [`docs/triage.md`](docs/triage.md).
