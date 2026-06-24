@@ -53,6 +53,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: all available caller secrets are passed to another workflow, increasing blast radius if that workflow is compromised or too broadly scoped.
 - Fix: pass only the specific secrets required by the reusable workflow.
 
+### `workflow.workflow-call-secrets-without-permissions`
+
+- Severity: `medium`
+- Flags: reusable workflows that accept caller secrets through `workflow_call` but do not declare top-level `permissions`.
+- Risk: the reusable workflow may run with broader default token permissions than it needs while handling sensitive inputs.
+- Fix: add explicit least-privilege permissions, such as `permissions: contents: read`, to reusable workflows that accept secrets.
+
 ## Secret Hygiene Rules
 
 ### `secrets.sensitive-file-committed`

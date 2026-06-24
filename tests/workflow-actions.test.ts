@@ -195,4 +195,29 @@ describe("workflowActionsRule", () => {
       }),
     );
   });
+
+  it("flags reusable workflows that accept secrets without explicit permissions", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/reusable-release.yml",
+          content:
+            "on:\n  workflow_call:\n    secrets:\n      npm_token:\n        required: true\njobs:\n  publish:\n    steps:\n      - run: npm publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.workflow-call-secrets-without-permissions",
+        severity: "medium",
+        filePath: ".github/workflows/reusable-release.yml",
+      }),
+    );
+  });
 });

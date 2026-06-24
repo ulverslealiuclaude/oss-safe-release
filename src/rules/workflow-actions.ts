@@ -5,6 +5,8 @@ const MUTABLE_REFS = ["main", "master", "HEAD"];
 const UNTRUSTED_CONTEXT_IN_RUN = /\brun:\s*.*\$\{\{\s*(github\.event|github\.head_ref|github\.base_ref)\b/;
 const REMOTE_SCRIPT_PIPE = /\b(?:curl|wget)\b[^\n|]*https?:\/\/[^\n|]+\|\s*(?:sudo\s+)?(?:bash|sh)\b/i;
 const SECRETS_INHERIT = /\bsecrets:\s*inherit\b/;
+const WORKFLOW_CALL = /(^|\n)\s*workflow_call:\s*(\n|$)|\bon:\s*workflow_call\b/;
+const TOP_LEVEL_PERMISSIONS = /^permissions:\s*/m;
 const PACKAGE_NAME = "(?:@[a-z0-9_.-]+\\/)?[a-z0-9_.-]+";
 const UNPINNED_GLOBAL_INSTALL = new RegExp(
   `\\b(?:(?:npm|pnpm)\\s+(?:install|i|add)\\s+(?:--global|-g)\\s+${PACKAGE_NAME}|yarn\\s+global\\s+add\\s+${PACKAGE_NAME})(?:\\s|$)`,
@@ -110,6 +112,18 @@ export const workflowActionsRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, secretsInheritLine),
           recommendation: "Pass only the specific secrets required by the reusable workflow instead of using secrets: inherit.",
+        });
+      }
+
+      if (WORKFLOW_CALL.test(workflow.content) && /\bsecrets:\s*\n/.test(workflow.content) && !TOP_LEVEL_PERMISSIONS.test(workflow.content)) {
+        findings.push({
+          ruleId: "workflow.workflow-call-secrets-without-permissions",
+          severity: "medium",
+          title: "Reusable workflow accepts secrets without explicit permissions",
+          message: "The workflow accepts caller secrets but does not declare top-level GitHub token permissions.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, "workflow_call"),
+          recommendation: "Add explicit least-privilege permissions, such as permissions: contents: read, to reusable workflows that accept secrets.",
         });
       }
     }
