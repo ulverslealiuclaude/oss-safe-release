@@ -24,3 +24,5 @@ jobs:
       - run: pnpm test
       - run: pnpm run build
       - run: pnpm run lint
+      - run: node dist/src/cli.js scan . --markdown examples/self-scan-report.md --json examples/self-scan-report.json --sarif examples/self-scan-report.sarif --fail-on high
+      - run: git diff --exit-code examples/self-scan-report.md examples/self-scan-report.json examples/self-scan-report.sarif
