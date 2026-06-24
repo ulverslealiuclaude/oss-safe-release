@@ -170,4 +170,29 @@ describe("workflowActionsRule", () => {
       }),
     );
   });
+
+  it("flags reusable workflow calls that inherit all secrets", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/reuse.yml",
+          content:
+            "on: push\njobs:\n  release:\n    uses: org/reusable/.github/workflows/release.yml@8ade135a41bc03ea155e62e844d188df1ea18608\n    secrets: inherit\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.reusable-workflow-secrets-inherit",
+        severity: "high",
+        filePath: ".github/workflows/reuse.yml",
+      }),
+    );
+  });
 });

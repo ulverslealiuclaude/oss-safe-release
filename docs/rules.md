@@ -46,6 +46,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: CI or release behavior can change when the latest package version changes.
 - Fix: pin global tools to an explicit version, or use lockfile-backed project dependencies.
 
+### `workflow.reusable-workflow-secrets-inherit`
+
+- Severity: `high`
+- Flags: reusable workflow calls that use `secrets: inherit`.
+- Risk: all available caller secrets are passed to another workflow, increasing blast radius if that workflow is compromised or too broadly scoped.
+- Fix: pass only the specific secrets required by the reusable workflow.
+
 ## Secret Hygiene Rules
 
 ### `secrets.sensitive-file-committed`

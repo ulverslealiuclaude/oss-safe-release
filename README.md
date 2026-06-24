@@ -144,6 +144,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `workflow.untrusted-context-in-run` | high | Flags shell steps that directly interpolate untrusted GitHub event context. |
 | `workflow.remote-script-pipe` | high | Flags workflows that pipe remote installer scripts directly into a shell. |
 | `workflow.unpinned-global-install` | medium | Flags workflows that globally install package-manager tools without fixed versions. |
+| `workflow.reusable-workflow-secrets-inherit` | high | Flags reusable workflow calls that pass all caller secrets with `secrets: inherit`. |
 | `secrets.sensitive-file-committed` | critical | Flags sensitive files committed to the repository. |
 | `secrets.gitignore-missing-env` | medium | Flags missing `.env` coverage in `.gitignore`. |
 | `release.publish-on-pull-request` | critical | Flags package publishing in pull request workflows. |

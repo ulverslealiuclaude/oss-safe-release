@@ -4,6 +4,7 @@ import { findLine } from "../workflows";
 const MUTABLE_REFS = ["main", "master", "HEAD"];
 const UNTRUSTED_CONTEXT_IN_RUN = /\brun:\s*.*\$\{\{\s*(github\.event|github\.head_ref|github\.base_ref)\b/;
 const REMOTE_SCRIPT_PIPE = /\b(?:curl|wget)\b[^\n|]*https?:\/\/[^\n|]+\|\s*(?:sudo\s+)?(?:bash|sh)\b/i;
+const SECRETS_INHERIT = /\bsecrets:\s*inherit\b/;
 const PACKAGE_NAME = "(?:@[a-z0-9_.-]+\\/)?[a-z0-9_.-]+";
 const UNPINNED_GLOBAL_INSTALL = new RegExp(
   `\\b(?:(?:npm|pnpm)\\s+(?:install|i|add)\\s+(?:--global|-g)\\s+${PACKAGE_NAME}|yarn\\s+global\\s+add\\s+${PACKAGE_NAME})(?:\\s|$)`,
@@ -96,6 +97,19 @@ export const workflowActionsRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, unpinnedGlobalInstallLine),
           recommendation: "Pin global tools to an explicit version, or use a lockfile-backed project dependency.",
+        });
+      }
+
+      const secretsInheritLine = workflow.content.split(/\r?\n/).find((line) => SECRETS_INHERIT.test(line));
+      if (secretsInheritLine) {
+        findings.push({
+          ruleId: "workflow.reusable-workflow-secrets-inherit",
+          severity: "high",
+          title: "Reusable workflow inherits all caller secrets",
+          message: "The workflow passes all available caller secrets to a reusable workflow.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, secretsInheritLine),
+          recommendation: "Pass only the specific secrets required by the reusable workflow instead of using secrets: inherit.",
         });
       }
     }
