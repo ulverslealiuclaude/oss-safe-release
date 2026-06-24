@@ -90,6 +90,8 @@ Omit `path` to ignore a rule across the repository. Keep ignores narrow and docu
 
 ## Example Reports
 
+Output formats and CI examples are documented in [`docs/examples.md`](docs/examples.md).
+
 This repository includes a clean self-scan example:
 
 - [`examples/self-scan-report.md`](examples/self-scan-report.md)
