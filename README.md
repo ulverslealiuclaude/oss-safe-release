@@ -132,6 +132,8 @@ jobs:
 
 ## Current Rules
 
+Detailed rule rationale and remediation guidance is documented in [`docs/rules.md`](docs/rules.md).
+
 | Rule | Severity | Description |
 | --- | --- | --- |
 | `workflow.mutable-action-ref` | high | Flags actions pinned to mutable refs. |
