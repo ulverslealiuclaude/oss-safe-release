@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - Added release workflow checks for package publishing from pull request workflows.
 - Added release workflow checks for push-triggered package publishing without trusted gates.
 - Added release workflow checks for manual package publishing without approval gates.
+- Added release workflow checks for Docker image publishing commands.
 - Added Markdown and JSON report output.
 - Added optional SARIF report output for GitHub code scanning workflows.
 - Added `--fail-on` to customize CI failure severity thresholds.

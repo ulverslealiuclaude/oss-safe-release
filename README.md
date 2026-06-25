@@ -10,8 +10,8 @@ Local-first safety checks for open-source maintainers before a pull request or r
 - Shell steps that interpolate untrusted GitHub event context directly into `run:` commands.
 - Sensitive files such as `.env`, `.npmrc`, `.pypirc`, `*.pem`, and `*.key`.
 - Missing `.gitignore` coverage for local environment files.
-- Package publishing commands that can run from pull request workflows.
-- Package publishing commands that run from unconstrained push workflows.
+- Package or container image publishing commands that can run from pull request workflows.
+- Package or container image publishing commands that run from unconstrained push workflows.
 
 The tool runs locally and does not send repository contents to any external service.
 
@@ -148,9 +148,9 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `workflow.workflow-call-secrets-without-permissions` | medium | Flags reusable workflows that accept secrets without explicit top-level permissions. |
 | `secrets.sensitive-file-committed` | critical | Flags sensitive files committed to the repository. |
 | `secrets.gitignore-missing-env` | medium | Flags missing `.env` coverage in `.gitignore`. |
-| `release.publish-on-pull-request` | critical | Flags package publishing in pull request workflows. |
-| `release.publish-without-trusted-gate` | high | Flags push-triggered package publishing without a trusted release gate. |
-| `release.manual-publish-without-approval` | medium | Flags manual package publishing without a protected environment or confirmation input. |
+| `release.publish-on-pull-request` | critical | Flags package or container image publishing in pull request workflows. |
+| `release.publish-without-trusted-gate` | high | Flags push-triggered package or container image publishing without a trusted release gate. |
+| `release.manual-publish-without-approval` | medium | Flags manual package or container image publishing without a protected environment or confirmation input. |
 
 ## Limitations
 

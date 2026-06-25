@@ -10,18 +10,21 @@ export const releaseRule: Rule = {
       const hasPullRequestTrigger = /on:\s*pull_request\b/.test(workflow.content) || /-\s*pull_request\b/.test(workflow.content);
       const hasPushTrigger = /on:\s*push\b/.test(workflow.content) || /-\s*push\b/.test(workflow.content);
       const hasWorkflowDispatchTrigger = /on:\s*workflow_dispatch\b/.test(workflow.content) || /-\s*workflow_dispatch\b/.test(workflow.content);
-      const publishesPackage = /\b(npm publish|pnpm publish|yarn npm publish|twine upload|cargo publish)\b/.test(workflow.content);
+      const publishesArtifact = /\b(npm publish|pnpm publish|yarn npm publish|twine upload|cargo publish|docker push)\b/.test(
+        workflow.content,
+      );
+      const publishLineNeedle = /\bdocker push\b/.test(workflow.content) ? "docker push" : "publish";
 
-      if (!publishesPackage) continue;
+      if (!publishesArtifact) continue;
 
       if (hasPullRequestTrigger) {
         findings.push({
           ruleId: "release.publish-on-pull-request",
           severity: "critical",
-          title: "Package publishing can run from pull requests",
-          message: "A workflow triggered by pull_request appears to publish a package.",
+          title: "Artifact publishing can run from pull requests",
+          message: "A workflow triggered by pull_request appears to publish a package or container image.",
           filePath: workflow.path,
-          line: findLine(workflow.content, "publish"),
+          line: findLine(workflow.content, publishLineNeedle),
           recommendation: "Restrict publishing to trusted tag or release events and require least-privilege permissions.",
         });
       }
@@ -31,10 +34,10 @@ export const releaseRule: Rule = {
         findings.push({
           ruleId: "release.publish-without-trusted-gate",
           severity: "high",
-          title: "Package publishing lacks a trusted release gate",
-          message: "A push-triggered workflow appears to publish a package without a tag, release, branch, or github.ref gate.",
+          title: "Artifact publishing lacks a trusted release gate",
+          message: "A push-triggered workflow appears to publish a package or container image without a tag, release, branch, or github.ref gate.",
           filePath: workflow.path,
-          line: findLine(workflow.content, "publish"),
+          line: findLine(workflow.content, publishLineNeedle),
           recommendation: "Restrict publishing to trusted release events, version tags, protected branches, or explicit github.ref conditions.",
         });
       }
@@ -47,8 +50,8 @@ export const releaseRule: Rule = {
         findings.push({
           ruleId: "release.manual-publish-without-approval",
           severity: "medium",
-          title: "Manual package publishing lacks an approval gate",
-          message: "A workflow_dispatch release workflow publishes a package without an environment gate or confirmation input.",
+          title: "Manual artifact publishing lacks an approval gate",
+          message: "A workflow_dispatch release workflow publishes a package or container image without an environment gate or confirmation input.",
           filePath: workflow.path,
           line: findLine(workflow.content, "workflow_dispatch"),
           recommendation: "Use a protected GitHub environment or require an explicit confirmation input before publishing.",

@@ -81,27 +81,27 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 ### `release.publish-on-pull-request`
 
 - Severity: `critical`
-- Flags: package publishing commands in workflows triggered by `pull_request`.
+- Flags: package or container image publishing commands in workflows triggered by `pull_request`.
 - Risk: untrusted pull request workflows may reach package release commands.
 - Fix: restrict publishing to trusted tag, release, or protected-branch events and use least-privilege permissions.
 
 ### `release.publish-without-trusted-gate`
 
 - Severity: `high`
-- Flags: push-triggered publishing workflows without tag, release, branch, or `github.ref` gates.
+- Flags: push-triggered package or container image publishing workflows without tag, release, branch, or `github.ref` gates.
 - Risk: ordinary pushes can trigger publishing unintentionally.
 - Fix: restrict publishing to trusted release events, version tags, protected branches, or explicit `github.ref` conditions.
 
 ### `release.manual-publish-without-approval`
 
 - Severity: `medium`
-- Flags: `workflow_dispatch` package publishing without a protected environment or confirmation input.
+- Flags: `workflow_dispatch` package or container image publishing without a protected environment or confirmation input.
 - Risk: manual release workflows can be triggered without a second safety check.
 - Fix: use a protected GitHub environment or require an explicit confirmation input before publishing.
 
 ## Severity Model
 
-- `critical`: likely credential exposure, package publishing from untrusted code, or broad write authority.
+- `critical`: likely credential exposure, artifact publishing from untrusted code, or broad write authority.
 - `high`: unsafe release or workflow behavior that can materially affect users or maintainers.
 - `medium`: risky defaults that increase the chance of accidental release, credential, or CI drift.
 - `low`: informational issues reserved for future advisory rules.
