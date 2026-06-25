@@ -98,6 +98,54 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags GitHub release creation in pull request workflows", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/github-release.yml",
+          content: "on: pull_request\njobs:\n  release:\n    steps:\n      - run: gh release create v1.2.3 dist/app.zip\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-on-pull-request",
+        severity: "critical",
+        filePath: ".github/workflows/github-release.yml",
+      }),
+    );
+  });
+
+  it("flags GitHub release creation on unconstrained push workflows", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/github-release.yml",
+          content: "on: push\njobs:\n  release:\n    steps:\n      - run: gh release create v1.2.3 dist/app.zip\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-without-trusted-gate",
+        severity: "high",
+        filePath: ".github/workflows/github-release.yml",
+      }),
+    );
+  });
+
   it("flags artifact publishing without explicit permissions", () => {
     const context: RepoContext = {
       rootDir: "/repo",
