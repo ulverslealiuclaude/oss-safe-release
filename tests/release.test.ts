@@ -216,6 +216,76 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags release-it in pull request workflows", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/release-it.yml",
+          content: "on: pull_request\njobs:\n  release:\n    steps:\n      - run: npx release-it\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-on-pull-request",
+        severity: "critical",
+        filePath: ".github/workflows/release-it.yml",
+      }),
+    );
+  });
+
+  it("flags Changesets publish on unconstrained push workflows", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/changesets.yml",
+          content: "on: push\njobs:\n  release:\n    steps:\n      - run: pnpm changeset publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-without-trusted-gate",
+        severity: "high",
+        filePath: ".github/workflows/changesets.yml",
+      }),
+    );
+  });
+
+  it("does not flag release-it dry runs as publishing", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/release-it.yml",
+          content: "on: pull_request\njobs:\n  release:\n    steps:\n      - run: npx release-it --dry-run\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-on-pull-request",
+      }),
+    );
+  });
+
   it("flags artifact publishing without explicit permissions", () => {
     const context: RepoContext = {
       rootDir: "/repo",

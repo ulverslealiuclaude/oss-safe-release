@@ -2,11 +2,12 @@ import type { Finding, Rule } from "../types";
 import { findLine } from "../workflows";
 
 const TOP_LEVEL_PERMISSIONS = /^permissions:\s*/m;
-const PUBLISH_COMMAND = /\b(npm publish|pnpm publish|yarn npm publish|twine upload|cargo publish|docker push|gh release create|npx semantic-release|semantic-release)\b/;
-const SEMANTIC_RELEASE_DRY_RUN = /\b(?:npx\s+)?semantic-release\b[^\n]*(?:^|\s)--dry-run(?:\s|$)/;
+const PUBLISH_COMMAND =
+  /\b(npm publish|pnpm publish|yarn npm publish|twine upload|cargo publish|docker push|gh release create|npx semantic-release|semantic-release|npx release-it|release-it|changeset publish|changesets publish|pnpm changeset publish|pnpm changesets publish|npx changeset publish|npx changesets publish|yarn changeset publish|yarn changesets publish)\b/;
+const RELEASE_DRY_RUN = /\b(?:npx\s+)?(?:semantic-release|release-it)\b[^\n]*(?:^|\s)--dry-run(?:\s|$)/;
 
 function findPublishCommandLine(content: string): string | undefined {
-  return content.split(/\r?\n/).find((line) => PUBLISH_COMMAND.test(line) && !SEMANTIC_RELEASE_DRY_RUN.test(line));
+  return content.split(/\r?\n/).find((line) => PUBLISH_COMMAND.test(line) && !RELEASE_DRY_RUN.test(line));
 }
 
 export const releaseRule: Rule = {
