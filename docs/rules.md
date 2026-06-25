@@ -32,6 +32,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: artifacts produced from untrusted pull request code can be consumed in a privileged workflow context.
 - Fix: keep artifact download and validation in an unprivileged `pull_request` workflow, or verify artifact provenance before privileged use.
 
+### `workflow.pull-request-target-uses-cache`
+
+- Severity: `medium`
+- Flags: `pull_request_target` workflows that directly use `actions/cache`, `actions/cache/restore`, or `actions/cache/save`.
+- Risk: dependency caches can be influenced by pull request inputs and reused in privileged workflow contexts.
+- Fix: prefer cache use in unprivileged `pull_request` workflows, or use trusted cache keys that cannot be controlled by pull request authors.
+
 ### `workflow.untrusted-context-in-run`
 
 - Severity: `high`

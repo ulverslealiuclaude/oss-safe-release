@@ -100,6 +100,31 @@ describe("workflowActionsRule", () => {
     );
   });
 
+  it("flags pull_request_target workflows that use cache actions", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/pr-target-cache.yml",
+          content:
+            "on: pull_request_target\njobs:\n  test:\n    steps:\n      - uses: actions/cache/restore@8ade135a41bc03ea155e62e844d188df1ea18608\n        with:\n          path: node_modules\n          key: pr-${{ github.event.pull_request.head.sha }}\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.pull-request-target-uses-cache",
+        severity: "medium",
+        filePath: ".github/workflows/pr-target-cache.yml",
+      }),
+    );
+  });
+
   it("flags untrusted GitHub context interpolation in run steps", () => {
     const context: RepoContext = {
       rootDir: "/repo",

@@ -8,6 +8,7 @@ const SECRETS_INHERIT = /\bsecrets:\s*inherit\b/;
 const WORKFLOW_CALL = /(^|\n)\s*workflow_call:\s*(\n|$)|\bon:\s*workflow_call\b/;
 const TOP_LEVEL_PERMISSIONS = /^permissions:\s*/m;
 const DOWNLOAD_ARTIFACT_ACTION = /uses:\s*actions\/download-artifact@/i;
+const CACHE_ACTION = /uses:\s*actions\/cache(?:\/(?:restore|save))?@/i;
 const PACKAGE_NAME = "(?:@[a-z0-9_.-]+\\/)?[a-z0-9_.-]+";
 const UNPINNED_GLOBAL_INSTALL = new RegExp(
   `\\b(?:(?:npm|pnpm)\\s+(?:install|i|add)\\s+(?:--global|-g)\\s+${PACKAGE_NAME}|yarn\\s+global\\s+add\\s+${PACKAGE_NAME})(?:\\s|$)`,
@@ -73,6 +74,18 @@ export const workflowActionsRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, "actions/download-artifact"),
           recommendation: "Keep artifact download and validation in an unprivileged pull_request workflow, or verify provenance before using artifacts in privileged jobs.",
+        });
+      }
+
+      if (usesPullRequestTarget && CACHE_ACTION.test(workflow.content)) {
+        findings.push({
+          ruleId: "workflow.pull-request-target-uses-cache",
+          severity: "medium",
+          title: "pull_request_target workflow uses cache actions",
+          message: "pull_request_target runs in a privileged context and should avoid sharing dependency caches with untrusted pull request inputs.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, "actions/cache"),
+          recommendation: "Prefer cache use in unprivileged pull_request workflows, or use trusted cache keys that cannot be controlled by pull request authors.",
         });
       }
 

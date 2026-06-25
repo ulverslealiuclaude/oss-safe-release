@@ -8,6 +8,7 @@ Local-first safety checks for open-source maintainers before a pull request or r
 - Workflows that grant `permissions: write-all`.
 - `pull_request_target` workflows that appear to check out or execute repository code.
 - `pull_request_target` workflows that directly download artifacts in a privileged context.
+- `pull_request_target` workflows that use dependency cache actions in a privileged context.
 - Shell steps that interpolate untrusted GitHub event context directly into `run:` commands.
 - Sensitive files such as `.env`, `.npmrc`, `.pypirc`, `*.pem`, and `*.key`.
 - Missing `.gitignore` coverage for local environment files.
@@ -143,6 +144,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `workflow.write-all-permissions` | critical | Flags workflows with broad write token permissions. |
 | `workflow.pull-request-target-executes-code` | high | Flags `pull_request_target` workflows that appear to execute repository code. |
 | `workflow.pull-request-target-downloads-artifact` | high | Flags `pull_request_target` workflows that directly download artifacts. |
+| `workflow.pull-request-target-uses-cache` | medium | Flags `pull_request_target` workflows that use dependency cache actions. |
 | `workflow.untrusted-context-in-run` | high | Flags shell steps that directly interpolate untrusted GitHub event context. |
 | `workflow.remote-script-pipe` | high | Flags workflows that pipe remote installer scripts directly into a shell. |
 | `workflow.unpinned-global-install` | medium | Flags workflows that globally install package-manager tools without fixed versions. |
