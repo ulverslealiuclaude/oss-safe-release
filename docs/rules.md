@@ -102,28 +102,28 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 ### `release.publish-on-pull-request`
 
 - Severity: `critical`
-- Flags: package, container image, or GitHub release publishing commands in workflows triggered by `pull_request`.
+- Flags: package, container image, GitHub release, or release automation commands in workflows triggered by `pull_request`.
 - Risk: untrusted pull request workflows may reach package release commands.
 - Fix: restrict publishing to trusted tag, release, or protected-branch events and use least-privilege permissions.
 
 ### `release.publish-without-trusted-gate`
 
 - Severity: `high`
-- Flags: push-triggered package, container image, or GitHub release publishing workflows without tag, release, branch, or `github.ref` gates.
+- Flags: push-triggered package, container image, GitHub release, or release automation workflows without tag, release, branch, or `github.ref` gates.
 - Risk: ordinary pushes can trigger publishing unintentionally.
 - Fix: restrict publishing to trusted release events, version tags, protected branches, or explicit `github.ref` conditions.
 
 ### `release.manual-publish-without-approval`
 
 - Severity: `medium`
-- Flags: `workflow_dispatch` package, container image, or GitHub release publishing without a protected environment or confirmation input.
+- Flags: `workflow_dispatch` package, container image, GitHub release, or release automation without a protected environment or confirmation input.
 - Risk: manual release workflows can be triggered without a second safety check.
 - Fix: use a protected GitHub environment or require an explicit confirmation input before publishing.
 
 ### `release.publish-without-explicit-permissions`
 
 - Severity: `medium`
-- Flags: package, container image, or GitHub release publishing workflows without top-level `permissions`.
+- Flags: package, container image, GitHub release, or release automation workflows without top-level `permissions`.
 - Risk: release jobs can inherit broader default token permissions than they need.
 - Fix: declare least-privilege top-level permissions, such as `contents: read` plus only the write scopes required to publish.
 

@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - Added release workflow checks for manual package publishing without approval gates.
 - Added release workflow checks for Docker image publishing commands.
 - Added release workflow checks for GitHub Release creation commands.
+- Added release workflow checks for `semantic-release` publishing commands.
 - Added release workflow checks for publishing without explicit token permissions.
 - Added Markdown and JSON report output.
 - Added optional SARIF report output for GitHub code scanning workflows.

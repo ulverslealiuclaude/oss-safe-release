@@ -13,8 +13,8 @@ Local-first safety checks for open-source maintainers before a pull request or r
 - `docker login` commands that pass registry passwords as command arguments.
 - Sensitive files such as `.env`, `.npmrc`, `.pypirc`, `*.pem`, and `*.key`.
 - Missing `.gitignore` coverage for local environment files.
-- Package, container image, or GitHub release publishing commands that can run from pull request workflows.
-- Package, container image, or GitHub release publishing commands that run from unconstrained push workflows.
+- Package, container image, GitHub release, or release automation commands that can run from pull request workflows.
+- Package, container image, GitHub release, or release automation commands that run from unconstrained push workflows.
 - Publishing workflows that do not declare explicit GitHub token permissions.
 
 The tool runs locally and does not send repository contents to any external service.
@@ -155,9 +155,9 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `workflow.workflow-call-secrets-without-permissions` | medium | Flags reusable workflows that accept secrets without explicit top-level permissions. |
 | `secrets.sensitive-file-committed` | critical | Flags sensitive files committed to the repository. |
 | `secrets.gitignore-missing-env` | medium | Flags missing `.env` coverage in `.gitignore`. |
-| `release.publish-on-pull-request` | critical | Flags package, container image, or GitHub release publishing in pull request workflows. |
-| `release.publish-without-trusted-gate` | high | Flags push-triggered package, container image, or GitHub release publishing without a trusted release gate. |
-| `release.manual-publish-without-approval` | medium | Flags manual package, container image, or GitHub release publishing without a protected environment or confirmation input. |
+| `release.publish-on-pull-request` | critical | Flags package, container image, GitHub release, or release automation publishing in pull request workflows. |
+| `release.publish-without-trusted-gate` | high | Flags push-triggered package, container image, GitHub release, or release automation publishing without a trusted release gate. |
+| `release.manual-publish-without-approval` | medium | Flags manual package, container image, GitHub release, or release automation publishing without a protected environment or confirmation input. |
 | `release.publish-without-explicit-permissions` | medium | Flags publishing workflows without explicit top-level token permissions. |
 
 ## Limitations

@@ -146,6 +146,76 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags semantic-release in pull request workflows", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/semantic-release.yml",
+          content: "on: pull_request\njobs:\n  release:\n    steps:\n      - run: npx semantic-release\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-on-pull-request",
+        severity: "critical",
+        filePath: ".github/workflows/semantic-release.yml",
+      }),
+    );
+  });
+
+  it("flags semantic-release on unconstrained push workflows", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/semantic-release.yml",
+          content: "on: push\njobs:\n  release:\n    steps:\n      - run: npx semantic-release\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-without-trusted-gate",
+        severity: "high",
+        filePath: ".github/workflows/semantic-release.yml",
+      }),
+    );
+  });
+
+  it("does not flag semantic-release dry runs as publishing", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/semantic-release.yml",
+          content: "on: pull_request\njobs:\n  release:\n    steps:\n      - run: npx semantic-release --dry-run\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-on-pull-request",
+      }),
+    );
+  });
+
   it("flags artifact publishing without explicit permissions", () => {
     const context: RepoContext = {
       rootDir: "/repo",
