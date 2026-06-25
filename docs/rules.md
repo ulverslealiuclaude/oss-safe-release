@@ -120,6 +120,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: manual release workflows can be triggered without a second safety check.
 - Fix: use a protected GitHub environment or require an explicit confirmation input before publishing.
 
+### `release.publish-without-explicit-permissions`
+
+- Severity: `medium`
+- Flags: package or container image publishing workflows without top-level `permissions`.
+- Risk: release jobs can inherit broader default token permissions than they need.
+- Fix: declare least-privilege top-level permissions, such as `contents: read` plus only the write scopes required to publish.
+
 ## Severity Model
 
 - `critical`: likely credential exposure, artifact publishing from untrusted code, or broad write authority.

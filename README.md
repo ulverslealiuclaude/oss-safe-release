@@ -15,6 +15,7 @@ Local-first safety checks for open-source maintainers before a pull request or r
 - Missing `.gitignore` coverage for local environment files.
 - Package or container image publishing commands that can run from pull request workflows.
 - Package or container image publishing commands that run from unconstrained push workflows.
+- Publishing workflows that do not declare explicit GitHub token permissions.
 
 The tool runs locally and does not send repository contents to any external service.
 
@@ -157,6 +158,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `release.publish-on-pull-request` | critical | Flags package or container image publishing in pull request workflows. |
 | `release.publish-without-trusted-gate` | high | Flags push-triggered package or container image publishing without a trusted release gate. |
 | `release.manual-publish-without-approval` | medium | Flags manual package or container image publishing without a protected environment or confirmation input. |
+| `release.publish-without-explicit-permissions` | medium | Flags publishing workflows without explicit top-level token permissions. |
 
 ## Limitations
 

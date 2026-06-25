@@ -1,6 +1,8 @@
 import type { Finding, Rule } from "../types";
 import { findLine } from "../workflows";
 
+const TOP_LEVEL_PERMISSIONS = /^permissions:\s*/m;
+
 export const releaseRule: Rule = {
   id: "release",
   run(context) {
@@ -16,6 +18,18 @@ export const releaseRule: Rule = {
       const publishLineNeedle = /\bdocker push\b/.test(workflow.content) ? "docker push" : "publish";
 
       if (!publishesArtifact) continue;
+
+      if (!TOP_LEVEL_PERMISSIONS.test(workflow.content)) {
+        findings.push({
+          ruleId: "release.publish-without-explicit-permissions",
+          severity: "medium",
+          title: "Artifact publishing lacks explicit token permissions",
+          message: "A publishing workflow does not declare top-level GitHub token permissions.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, publishLineNeedle),
+          recommendation: "Declare least-privilege top-level permissions for release workflows, such as contents: read plus only the write scopes required to publish.",
+        });
+      }
 
       if (hasPullRequestTrigger) {
         findings.push({

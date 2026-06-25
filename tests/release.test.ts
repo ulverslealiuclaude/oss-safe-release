@@ -98,6 +98,52 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags artifact publishing without explicit permissions", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/release.yml",
+          content: "on: release\njobs:\n  publish:\n    steps:\n      - run: npm publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-without-explicit-permissions",
+        severity: "medium",
+        filePath: ".github/workflows/release.yml",
+      }),
+    );
+  });
+
+  it("does not flag artifact publishing with explicit permissions", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/release.yml",
+          content: "on: release\npermissions:\n  contents: read\n  id-token: write\njobs:\n  publish:\n    steps:\n      - run: npm publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-without-explicit-permissions",
+      }),
+    );
+  });
+
   it("flags manual package publishing without an environment or confirmation input", () => {
     const context: RepoContext = {
       rootDir: "/repo",
