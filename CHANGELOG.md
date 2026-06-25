@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Added the initial `oss-safe-release` CLI.
 - Added deterministic checks for GitHub Actions mutable refs and `write-all` permissions.
 - Added detection for `pull_request_target` workflows that appear to execute repository code.
+- Added detection for `pull_request_target` workflows that directly download artifacts.
 - Added detection for untrusted GitHub event context interpolation in shell steps.
 - Added detection for workflows that pipe remote installer scripts directly into shells.
 - Added detection for workflows that globally install package-manager tools without fixed versions.

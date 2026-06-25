@@ -75,6 +75,31 @@ describe("workflowActionsRule", () => {
     );
   });
 
+  it("flags pull_request_target workflows that download artifacts", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/pr-target-artifacts.yml",
+          content:
+            "on: pull_request_target\njobs:\n  publish:\n    steps:\n      - uses: actions/download-artifact@8ade135a41bc03ea155e62e844d188df1ea18608\n        with:\n          name: pr-build\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.pull-request-target-downloads-artifact",
+        severity: "high",
+        filePath: ".github/workflows/pr-target-artifacts.yml",
+      }),
+    );
+  });
+
   it("flags untrusted GitHub context interpolation in run steps", () => {
     const context: RepoContext = {
       rootDir: "/repo",

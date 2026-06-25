@@ -25,6 +25,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: `pull_request_target` runs in a privileged context and can expose secrets or write permissions to untrusted pull request code.
 - Fix: use `pull_request` for untrusted code, or avoid checkout and shell execution in `pull_request_target` workflows.
 
+### `workflow.pull-request-target-downloads-artifact`
+
+- Severity: `high`
+- Flags: `pull_request_target` workflows that directly use `actions/download-artifact`.
+- Risk: artifacts produced from untrusted pull request code can be consumed in a privileged workflow context.
+- Fix: keep artifact download and validation in an unprivileged `pull_request` workflow, or verify artifact provenance before privileged use.
+
 ### `workflow.untrusted-context-in-run`
 
 - Severity: `high`
