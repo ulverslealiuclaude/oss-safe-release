@@ -9,6 +9,7 @@ const WORKFLOW_CALL = /(^|\n)\s*workflow_call:\s*(\n|$)|\bon:\s*workflow_call\b/
 const TOP_LEVEL_PERMISSIONS = /^permissions:\s*/m;
 const DOWNLOAD_ARTIFACT_ACTION = /uses:\s*actions\/download-artifact@/i;
 const CACHE_ACTION = /uses:\s*actions\/cache(?:\/(?:restore|save))?@/i;
+const DOCKER_LOGIN_PASSWORD_ARG = /\bdocker\s+login\b(?=[^\n]*(?:--password(?:\s+|=)|(?:^|\s)-p(?:\s+|=)))(?![^\n]*--password-stdin\b)/i;
 const PACKAGE_NAME = "(?:@[a-z0-9_.-]+\\/)?[a-z0-9_.-]+";
 const UNPINNED_GLOBAL_INSTALL = new RegExp(
   `\\b(?:(?:npm|pnpm)\\s+(?:install|i|add)\\s+(?:--global|-g)\\s+${PACKAGE_NAME}|yarn\\s+global\\s+add\\s+${PACKAGE_NAME})(?:\\s|$)`,
@@ -112,6 +113,19 @@ export const workflowActionsRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, remoteScriptPipeLine),
           recommendation: "Pin and verify installer contents, or vendor reviewed scripts into the repository before executing them.",
+        });
+      }
+
+      const dockerLoginPasswordArgLine = workflow.content.split(/\r?\n/).find((line) => DOCKER_LOGIN_PASSWORD_ARG.test(line));
+      if (dockerLoginPasswordArgLine) {
+        findings.push({
+          ruleId: "workflow.docker-login-password-arg",
+          severity: "medium",
+          title: "Docker login passes a password as a command argument",
+          message: "docker login is using a password argument, which can expose registry credentials through shell history, process arguments, or logs.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, dockerLoginPasswordArgLine),
+          recommendation: "Pass registry credentials through standard input with docker login --password-stdin.",
         });
       }
 

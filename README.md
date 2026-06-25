@@ -10,6 +10,7 @@ Local-first safety checks for open-source maintainers before a pull request or r
 - `pull_request_target` workflows that directly download artifacts in a privileged context.
 - `pull_request_target` workflows that use dependency cache actions in a privileged context.
 - Shell steps that interpolate untrusted GitHub event context directly into `run:` commands.
+- `docker login` commands that pass registry passwords as command arguments.
 - Sensitive files such as `.env`, `.npmrc`, `.pypirc`, `*.pem`, and `*.key`.
 - Missing `.gitignore` coverage for local environment files.
 - Package or container image publishing commands that can run from pull request workflows.
@@ -147,6 +148,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `workflow.pull-request-target-uses-cache` | medium | Flags `pull_request_target` workflows that use dependency cache actions. |
 | `workflow.untrusted-context-in-run` | high | Flags shell steps that directly interpolate untrusted GitHub event context. |
 | `workflow.remote-script-pipe` | high | Flags workflows that pipe remote installer scripts directly into a shell. |
+| `workflow.docker-login-password-arg` | medium | Flags `docker login` commands that pass registry passwords as command arguments. |
 | `workflow.unpinned-global-install` | medium | Flags workflows that globally install package-manager tools without fixed versions. |
 | `workflow.reusable-workflow-secrets-inherit` | high | Flags reusable workflow calls that pass all caller secrets with `secrets: inherit`. |
 | `workflow.workflow-call-secrets-without-permissions` | medium | Flags reusable workflows that accept secrets without explicit top-level permissions. |

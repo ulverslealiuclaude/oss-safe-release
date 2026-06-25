@@ -53,6 +53,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: remote installer contents can change without repository review and execute inside CI or release automation.
 - Fix: pin and verify installer contents, or vendor reviewed scripts into the repository before executing them.
 
+### `workflow.docker-login-password-arg`
+
+- Severity: `medium`
+- Flags: `docker login` commands that use `--password` or `-p` instead of `--password-stdin`.
+- Risk: registry credentials can be exposed through shell history, process arguments, or logs.
+- Fix: pass credentials through standard input with `docker login --password-stdin`.
+
 ### `workflow.unpinned-global-install`
 
 - Severity: `medium`

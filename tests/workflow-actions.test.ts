@@ -175,6 +175,54 @@ describe("workflowActionsRule", () => {
     );
   });
 
+  it("flags docker login commands that pass passwords as arguments", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/container-release.yml",
+          content:
+            "on: push\njobs:\n  release:\n    steps:\n      - run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.docker-login-password-arg",
+        severity: "medium",
+        filePath: ".github/workflows/container-release.yml",
+      }),
+    );
+  });
+
+  it("does not flag docker login commands that use password stdin", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/container-release.yml",
+          content:
+            "on: push\njobs:\n  release:\n    steps:\n      - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.docker-login-password-arg",
+      }),
+    );
+  });
+
   it("flags unpinned global tool installs in workflows", () => {
     const context: RepoContext = {
       rootDir: "/repo",
