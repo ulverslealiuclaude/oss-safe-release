@@ -14,6 +14,7 @@ const NPM_PACKAGE_PUBLISH = /\b(?:npm|pnpm)\s+publish\b|\byarn\s+npm\s+publish\b
 const NPM_PROVENANCE_PUBLISH = /\b(?:npm|pnpm)\s+publish\b[^\n]*\s--provenance\b|\byarn\s+npm\s+publish\b[^\n]*\s--provenance\b/;
 const ID_TOKEN_WRITE_PERMISSION = /^\s*id-token:\s*write\b/m;
 const NPM_AUTH_TOKEN_REFERENCE = /\b(?:NODE_AUTH_TOKEN|NPM_TOKEN)\b|secrets\.(?:NODE_AUTH_TOKEN|NPM_TOKEN)\b/;
+const NPM_AUTH_TOKEN_IN_RUN = /^\s*-\s*run:\s*[^\n]*secrets\.(?:NODE_AUTH_TOKEN|NPM_TOKEN)\b/m;
 const WRITE_ALL_PERMISSION = /permissions:\s*write-all\b/;
 
 function findPublishCommandLine(content: string): string | undefined {
@@ -104,6 +105,18 @@ export const releaseRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, publishCommandLine),
           recommendation: "Use a protected GitHub environment for npm token publishing so release secrets require the repository's intended approval and protection rules.",
+        });
+      }
+
+      if (NPM_PACKAGE_PUBLISH.test(publishCommandLine) && NPM_AUTH_TOKEN_IN_RUN.test(workflow.content)) {
+        findings.push({
+          ruleId: "release.npm-token-in-run-command",
+          severity: "medium",
+          title: "npm token is referenced directly in a run command",
+          message: "A workflow references an npm auth token directly inside a shell command.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, "secrets.NPM_TOKEN") ?? findLine(workflow.content, "secrets.NODE_AUTH_TOKEN"),
+          recommendation: "Pass npm publishing tokens through step env, such as NODE_AUTH_TOKEN, instead of interpolating secrets directly into run commands.",
         });
       }
 

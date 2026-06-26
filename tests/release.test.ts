@@ -572,6 +572,54 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags npm token references directly inside run commands", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/npm-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  publish:\n    environment: npm-release\n    steps:\n      - run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} && npm publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.npm-token-in-run-command",
+        severity: "medium",
+        filePath: ".github/workflows/npm-publish.yml",
+      }),
+    );
+  });
+
+  it("does not flag npm tokens passed through step env", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/npm-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  publish:\n    environment: npm-release\n    steps:\n      - run: npm publish\n        env:\n          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.npm-token-in-run-command",
+      }),
+    );
+  });
+
   it("flags manual package publishing without an environment or confirmation input", () => {
     const context: RepoContext = {
       rootDir: "/repo",

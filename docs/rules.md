@@ -156,6 +156,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: release secrets can be used without the repository's intended environment protection rules or reviewer approvals.
 - Fix: attach token-backed npm publishing jobs to a protected GitHub environment, such as `npm-release`.
 
+### `release.npm-token-in-run-command`
+
+- Severity: `medium`
+- Flags: npm publishing workflows that interpolate `secrets.NPM_TOKEN` or `secrets.NODE_AUTH_TOKEN` directly into a `run:` command.
+- Risk: direct secret interpolation is easier to expose through command construction, logs, or future shell edits.
+- Fix: pass npm publishing tokens through step `env`, such as `NODE_AUTH_TOKEN`, instead of embedding secrets in shell commands.
+
 ## Severity Model
 
 - `critical`: likely credential exposure, artifact publishing from untrusted code, or broad write authority.

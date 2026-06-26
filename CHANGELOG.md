@@ -29,6 +29,7 @@ All notable changes to this project will be documented in this file.
 - Added release workflow checks for GitHub Release creation without `contents: write`.
 - Added release workflow checks for npm provenance publishing without `id-token: write`.
 - Added release workflow checks for npm token publishing without a protected environment.
+- Added release workflow checks for npm token interpolation inside shell commands.
 - Added Markdown and JSON report output.
 - Added optional SARIF report output for GitHub code scanning workflows.
 - Added `--fail-on` to customize CI failure severity thresholds.
