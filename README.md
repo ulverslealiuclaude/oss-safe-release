@@ -18,6 +18,7 @@ Local-first safety checks for open-source maintainers before a pull request or r
 - Publishing workflows that do not declare explicit GitHub token permissions.
 - GHCR container publishing without `packages: write`.
 - GitHub Release creation without `contents: write`.
+- npm provenance publishing without `id-token: write`.
 
 The tool runs locally and does not send repository contents to any external service.
 
@@ -163,6 +164,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `release.publish-without-explicit-permissions` | medium | Flags publishing workflows without explicit top-level token permissions. |
 | `release.ghcr-publish-without-packages-write` | medium | Flags GHCR publishing workflows without `packages: write`. |
 | `release.github-release-without-contents-write` | medium | Flags GitHub Release publishing workflows without `contents: write`. |
+| `release.npm-provenance-without-id-token-write` | medium | Flags npm provenance publishing workflows without `id-token: write`. |
 
 ## Limitations
 

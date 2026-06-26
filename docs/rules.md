@@ -142,6 +142,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: GitHub Release publishing may fail or lead maintainers to broaden token permissions instead of granting the specific required scope.
 - Fix: declare `contents: write` for GitHub Release publishing jobs and keep other GitHub token permissions least-privilege.
 
+### `release.npm-provenance-without-id-token-write`
+
+- Severity: `medium`
+- Flags: `npm publish --provenance`, `pnpm publish --provenance`, or `yarn npm publish --provenance` workflows that do not declare `id-token: write`.
+- Risk: npm provenance publishing may fail because GitHub Actions cannot mint the OIDC token required for package provenance.
+- Fix: declare `id-token: write` for npm provenance publishing jobs and keep other GitHub token permissions least-privilege.
+
 ## Severity Model
 
 - `critical`: likely credential exposure, artifact publishing from untrusted code, or broad write authority.

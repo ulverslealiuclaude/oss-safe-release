@@ -476,6 +476,54 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags npm provenance publishing without id-token write permission", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/npm-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  publish:\n    steps:\n      - run: npm publish --provenance\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.npm-provenance-without-id-token-write",
+        severity: "medium",
+        filePath: ".github/workflows/npm-publish.yml",
+      }),
+    );
+  });
+
+  it("does not flag npm provenance publishing with id-token write permission", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/npm-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\n  id-token: write\njobs:\n  publish:\n    steps:\n      - run: npm publish --provenance\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.npm-provenance-without-id-token-write",
+      }),
+    );
+  });
+
   it("flags manual package publishing without an environment or confirmation input", () => {
     const context: RepoContext = {
       rootDir: "/repo",

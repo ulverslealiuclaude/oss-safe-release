@@ -10,6 +10,8 @@ const GHCR_DOCKER_PUSH = /\bdocker\s+push\s+ghcr\.io\//;
 const PACKAGES_WRITE_PERMISSION = /^\s*packages:\s*write\b/m;
 const GITHUB_RELEASE_CREATE = /\bgh\s+release\s+create\b/;
 const CONTENTS_WRITE_PERMISSION = /^\s*contents:\s*write\b/m;
+const NPM_PROVENANCE_PUBLISH = /\b(?:npm|pnpm)\s+publish\b[^\n]*\s--provenance\b|\byarn\s+npm\s+publish\b[^\n]*\s--provenance\b/;
+const ID_TOKEN_WRITE_PERMISSION = /^\s*id-token:\s*write\b/m;
 const WRITE_ALL_PERMISSION = /permissions:\s*write-all\b/;
 
 function findPublishCommandLine(content: string): string | undefined {
@@ -71,6 +73,22 @@ export const releaseRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, publishCommandLine),
           recommendation: "Declare contents: write for GitHub release publishing jobs and keep other GitHub token permissions least-privilege.",
+        });
+      }
+
+      if (
+        NPM_PROVENANCE_PUBLISH.test(publishCommandLine) &&
+        !ID_TOKEN_WRITE_PERMISSION.test(workflow.content) &&
+        !WRITE_ALL_PERMISSION.test(workflow.content)
+      ) {
+        findings.push({
+          ruleId: "release.npm-provenance-without-id-token-write",
+          severity: "medium",
+          title: "npm provenance publishing lacks id-token write permission",
+          message: "A workflow publishes an npm package with provenance without declaring id-token: write.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, publishCommandLine),
+          recommendation: "Declare id-token: write for npm provenance publishing jobs and keep other GitHub token permissions least-privilege.",
         });
       }
 
