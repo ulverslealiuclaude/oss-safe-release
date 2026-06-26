@@ -149,6 +149,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: npm provenance publishing may fail because GitHub Actions cannot mint the OIDC token required for package provenance.
 - Fix: declare `id-token: write` for npm provenance publishing jobs and keep other GitHub token permissions least-privilege.
 
+### `release.npm-token-without-environment`
+
+- Severity: `medium`
+- Flags: npm, pnpm, or Yarn npm publishing workflows that reference `NODE_AUTH_TOKEN` or `NPM_TOKEN` without declaring a GitHub `environment`.
+- Risk: release secrets can be used without the repository's intended environment protection rules or reviewer approvals.
+- Fix: attach token-backed npm publishing jobs to a protected GitHub environment, such as `npm-release`.
+
 ## Severity Model
 
 - `critical`: likely credential exposure, artifact publishing from untrusted code, or broad write authority.

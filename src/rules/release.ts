@@ -10,8 +10,10 @@ const GHCR_DOCKER_PUSH = /\bdocker\s+push\s+ghcr\.io\//;
 const PACKAGES_WRITE_PERMISSION = /^\s*packages:\s*write\b/m;
 const GITHUB_RELEASE_CREATE = /\bgh\s+release\s+create\b/;
 const CONTENTS_WRITE_PERMISSION = /^\s*contents:\s*write\b/m;
+const NPM_PACKAGE_PUBLISH = /\b(?:npm|pnpm)\s+publish\b|\byarn\s+npm\s+publish\b/;
 const NPM_PROVENANCE_PUBLISH = /\b(?:npm|pnpm)\s+publish\b[^\n]*\s--provenance\b|\byarn\s+npm\s+publish\b[^\n]*\s--provenance\b/;
 const ID_TOKEN_WRITE_PERMISSION = /^\s*id-token:\s*write\b/m;
+const NPM_AUTH_TOKEN_REFERENCE = /\b(?:NODE_AUTH_TOKEN|NPM_TOKEN)\b|secrets\.(?:NODE_AUTH_TOKEN|NPM_TOKEN)\b/;
 const WRITE_ALL_PERMISSION = /permissions:\s*write-all\b/;
 
 function findPublishCommandLine(content: string): string | undefined {
@@ -32,6 +34,7 @@ export const releaseRule: Rule = {
       const hasPullRequestTrigger = /on:\s*pull_request\b/.test(workflow.content) || /-\s*pull_request\b/.test(workflow.content);
       const hasPushTrigger = /on:\s*push\b/.test(workflow.content) || /-\s*push\b/.test(workflow.content);
       const hasWorkflowDispatchTrigger = /on:\s*workflow_dispatch\b/.test(workflow.content) || /-\s*workflow_dispatch\b/.test(workflow.content);
+      const hasEnvironmentGate = /\benvironment:\s*[^\s#]+/.test(workflow.content);
       const publishCommandLine = findPublishCommandLine(workflow.content);
 
       if (!publishCommandLine) continue;
@@ -92,6 +95,18 @@ export const releaseRule: Rule = {
         });
       }
 
+      if (NPM_PACKAGE_PUBLISH.test(publishCommandLine) && NPM_AUTH_TOKEN_REFERENCE.test(workflow.content) && !hasEnvironmentGate) {
+        findings.push({
+          ruleId: "release.npm-token-without-environment",
+          severity: "medium",
+          title: "npm token publishing lacks a protected environment",
+          message: "A workflow publishes an npm package with an npm auth token without declaring a GitHub environment.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, publishCommandLine),
+          recommendation: "Use a protected GitHub environment for npm token publishing so release secrets require the repository's intended approval and protection rules.",
+        });
+      }
+
       if (hasPullRequestTrigger) {
         findings.push({
           ruleId: "release.publish-on-pull-request",
@@ -118,7 +133,6 @@ export const releaseRule: Rule = {
         });
       }
 
-      const hasEnvironmentGate = /\benvironment:\s*[^\s#]+/.test(workflow.content);
       const hasConfirmationInput = /\b(confirm|confirmation|approve|approval):\s*\n|\b(confirm|confirmation|approve|approval):\s*[^\n]+/.test(
         workflow.content,
       );

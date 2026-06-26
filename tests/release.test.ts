@@ -524,6 +524,54 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags npm token publishing without a protected environment", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/npm-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  publish:\n    steps:\n      - run: npm publish\n        env:\n          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.npm-token-without-environment",
+        severity: "medium",
+        filePath: ".github/workflows/npm-publish.yml",
+      }),
+    );
+  });
+
+  it("does not flag npm token publishing with a protected environment", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/npm-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  publish:\n    environment: npm-release\n    steps:\n      - run: npm publish\n        env:\n          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.npm-token-without-environment",
+      }),
+    );
+  });
+
   it("flags manual package publishing without an environment or confirmation input", () => {
     const context: RepoContext = {
       rootDir: "/repo",
