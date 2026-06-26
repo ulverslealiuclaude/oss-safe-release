@@ -194,6 +194,54 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags GitHub release creation without contents write permission", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/github-release.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  release:\n    steps:\n      - run: gh release create v1.2.3 dist/app.zip\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.github-release-without-contents-write",
+        severity: "medium",
+        filePath: ".github/workflows/github-release.yml",
+      }),
+    );
+  });
+
+  it("does not flag GitHub release creation with contents write permission", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/github-release.yml",
+          content:
+            "on: release\npermissions:\n  contents: write\njobs:\n  release:\n    steps:\n      - run: gh release create v1.2.3 dist/app.zip\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.github-release-without-contents-write",
+      }),
+    );
+  });
+
   it("flags semantic-release in pull request workflows", () => {
     const context: RepoContext = {
       rootDir: "/repo",

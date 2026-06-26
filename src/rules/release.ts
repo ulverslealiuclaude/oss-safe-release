@@ -8,6 +8,9 @@ const RELEASE_DRY_RUN = /\b(?:npx\s+)?(?:semantic-release|release-it)\b[^\n]*(?:
 const CHANGESETS_ACTION_WITH_PUBLISH = /uses:\s*changesets\/action@[^\n]+[\s\S]*?\n\s*publish:\s*[^\n#]+/i;
 const GHCR_DOCKER_PUSH = /\bdocker\s+push\s+ghcr\.io\//;
 const PACKAGES_WRITE_PERMISSION = /^\s*packages:\s*write\b/m;
+const GITHUB_RELEASE_CREATE = /\bgh\s+release\s+create\b/;
+const CONTENTS_WRITE_PERMISSION = /^\s*contents:\s*write\b/m;
+const WRITE_ALL_PERMISSION = /permissions:\s*write-all\b/;
 
 function findPublishCommandLine(content: string): string | undefined {
   const commandLine = content.split(/\r?\n/).find((line) => PUBLISH_COMMAND.test(line) && !RELEASE_DRY_RUN.test(line));
@@ -52,6 +55,22 @@ export const releaseRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, publishCommandLine),
           recommendation: "Declare packages: write for GHCR publishing jobs and keep other GitHub token permissions least-privilege.",
+        });
+      }
+
+      if (
+        GITHUB_RELEASE_CREATE.test(publishCommandLine) &&
+        !CONTENTS_WRITE_PERMISSION.test(workflow.content) &&
+        !WRITE_ALL_PERMISSION.test(workflow.content)
+      ) {
+        findings.push({
+          ruleId: "release.github-release-without-contents-write",
+          severity: "medium",
+          title: "GitHub release publishing lacks contents write permission",
+          message: "A workflow creates a GitHub release without declaring contents: write.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, publishCommandLine),
+          recommendation: "Declare contents: write for GitHub release publishing jobs and keep other GitHub token permissions least-privilege.",
         });
       }
 
