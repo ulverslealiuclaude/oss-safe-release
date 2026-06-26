@@ -10,6 +10,12 @@ export interface Finding {
   recommendation: string;
 }
 
+export interface ScanSummary {
+  fileCount: number;
+  workflowCount: number;
+  ruleCount: number;
+}
+
 export interface RepoFile {
   path: string;
   content: string;

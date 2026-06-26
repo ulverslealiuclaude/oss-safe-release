@@ -54,7 +54,7 @@ export function createProgram(): Command {
       if (options.sarif !== undefined) {
         await writeFile(resolve(rootDir, options.sarif), renderSarifReport(result.findings));
       }
-      process.stdout.write(renderConsoleSummary(result.findings));
+      process.stdout.write(renderConsoleSummary(result.findings, result.summary));
       process.exitCode = shouldFailForFindings(result.findings, options.failOn) ? 1 : 0;
     });
 

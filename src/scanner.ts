@@ -2,7 +2,7 @@ import { discoverRepoFiles } from "./files";
 import { releaseRule } from "./rules/release";
 import { secretsRule } from "./rules/secrets";
 import { workflowActionsRule } from "./rules/workflow-actions";
-import type { Finding, IgnoreEntry, RepoContext, Rule, ScannerConfig, Severity } from "./types";
+import type { Finding, IgnoreEntry, RepoContext, Rule, ScannerConfig, ScanSummary, Severity } from "./types";
 import { parseWorkflowFiles } from "./workflows";
 
 const BUILT_IN_RULES: Rule[] = [workflowActionsRule, secretsRule, releaseRule];
@@ -10,19 +10,26 @@ const SEVERITY_ORDER: Record<Severity, number> = { critical: 0, high: 1, medium:
 
 export interface ScanResult {
   findings: Finding[];
+  summary: ScanSummary;
 }
 
 export async function scanRepository(rootDir: string): Promise<ScanResult> {
   const files = await discoverRepoFiles(rootDir);
+  const workflows = parseWorkflowFiles(files);
   const context: RepoContext = {
     rootDir,
     files,
-    workflows: parseWorkflowFiles(files),
+    workflows,
   };
   const config = loadConfig(files);
   const findings = applyIgnores(BUILT_IN_RULES.flatMap((rule) => rule.run(context)), config.ignore ?? []);
 
   return {
+    summary: {
+      fileCount: files.length,
+      workflowCount: workflows.length,
+      ruleCount: BUILT_IN_RULES.length,
+    },
     findings: findings.sort((a, b) => {
       const severityDelta = SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity];
       if (severityDelta !== 0) return severityDelta;

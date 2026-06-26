@@ -16,6 +16,11 @@ describe("scanRepository", () => {
 
     const result = await scanRepository(root);
 
+    expect(result.summary).toEqual({
+      fileCount: 2,
+      workflowCount: 1,
+      ruleCount: 3,
+    });
     expect(result.findings.map((finding) => finding.ruleId)).toEqual(
       expect.arrayContaining([
         "workflow.mutable-action-ref",

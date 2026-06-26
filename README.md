@@ -61,6 +61,8 @@ npx oss-safe-release scan . --markdown reports/safe-release.md --json reports/sa
 
 The CLI exits with code `1` when it finds `high` or `critical` findings. This makes it useful in CI while still producing readable reports for maintainers. SARIF output can be uploaded to GitHub code scanning in repositories that use that workflow.
 
+Console output includes the finding count, severity breakdown, and scan summary so maintainers can quickly confirm the number of files, workflows, and built-in rules evaluated.
+
 Adjust the CI failure threshold:
 
 ```bash

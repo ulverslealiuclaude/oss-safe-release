@@ -32,6 +32,7 @@ All notable changes to this project will be documented in this file.
 - Added release workflow checks for npm token interpolation inside shell commands.
 - Added Markdown and JSON report output.
 - Added optional SARIF report output for GitHub code scanning workflows.
+- Added console scan summaries with file, workflow, and rule counts.
 - Added `--fail-on` to customize CI failure severity thresholds.
 - Added `oss-safe-release.config.json` support for rule and path ignores.
 - Added tests, documentation, CI configuration, and an example self-scan report.

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { renderConsoleSummary } from "../src/reporters/console";
 import { renderJsonReport } from "../src/reporters/json";
 import { renderMarkdownReport } from "../src/reporters/markdown";
 import { renderSarifReport } from "../src/reporters/sarif";
@@ -17,6 +18,28 @@ const findings: Finding[] = [
 ];
 
 describe("reporters", () => {
+  it("renders console summaries with scan metadata", () => {
+    const summary = renderConsoleSummary(findings, {
+      fileCount: 8,
+      workflowCount: 2,
+      ruleCount: 20,
+    });
+
+    expect(summary).toContain("1 finding");
+    expect(summary).toContain("scanned 8 files, 2 workflows, 20 rules");
+  });
+
+  it("renders singular scan metadata labels", () => {
+    const summary = renderConsoleSummary([], {
+      fileCount: 1,
+      workflowCount: 1,
+      ruleCount: 1,
+    });
+
+    expect(summary).toContain("scanned 1 file, 1 workflow, 1 rule");
+  });
+
+
   it("renders Markdown reports with finding details", () => {
     const markdown = renderMarkdownReport(findings);
 
