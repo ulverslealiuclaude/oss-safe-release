@@ -264,6 +264,54 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags Changesets action publish inputs on unconstrained push workflows", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/changesets-action.yml",
+          content:
+            "on: push\njobs:\n  release:\n    steps:\n      - uses: changesets/action@8ade135a41bc03ea155e62e844d188df1ea18608\n        with:\n          publish: yarn release\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-without-trusted-gate",
+        severity: "high",
+        filePath: ".github/workflows/changesets-action.yml",
+      }),
+    );
+  });
+
+  it("does not flag Changesets action without a publish input", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/changesets-action.yml",
+          content:
+            "on: push\njobs:\n  release:\n    steps:\n      - uses: changesets/action@8ade135a41bc03ea155e62e844d188df1ea18608\n        with:\n          version: pnpm changeset version\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-without-trusted-gate",
+      }),
+    );
+  });
+
   it("does not flag release-it dry runs as publishing", () => {
     const context: RepoContext = {
       rootDir: "/repo",

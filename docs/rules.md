@@ -103,7 +103,7 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 
 - Severity: `critical`
 - Flags: package, container image, GitHub release, or release automation commands in workflows triggered by `pull_request`.
-- Examples: `npm publish`, `docker push`, `gh release create`, `semantic-release`, `release-it`, and `changeset publish`.
+- Examples: `npm publish`, `docker push`, `gh release create`, `semantic-release`, `release-it`, `changeset publish`, and `changesets/action` with a `publish` input.
 - Risk: untrusted pull request workflows may reach package release commands.
 - Fix: restrict publishing to trusted tag, release, or protected-branch events and use least-privilege permissions.
 
