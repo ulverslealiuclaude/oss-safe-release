@@ -20,6 +20,7 @@ The self-scan should report zero findings for this repository. If findings appea
 - Confirm `package.json` version is `0.1.0`.
 - Confirm `CHANGELOG.md` has a `0.1.0` section with the current rule set and output formats.
 - Confirm README usage examples mention Markdown, JSON, SARIF, config ignores, and `--fail-on`.
+- Confirm `docs/release-notes/v0.1.0.md` mentions the current rule set, output formats, and console scan summary.
 - Confirm `SECURITY.md`, `CONTRIBUTING.md`, and `LICENSE` are present.
 - Regenerate `examples/self-scan-report.md`, `examples/self-scan-report.json`, and `examples/self-scan-report.sarif` from the verified build.
 - Confirm no account identifiers, tokens, API keys, private emails, or OpenAI organization IDs are committed.
