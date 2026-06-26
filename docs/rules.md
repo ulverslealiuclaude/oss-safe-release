@@ -128,6 +128,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: release jobs can inherit broader default token permissions than they need.
 - Fix: declare least-privilege top-level permissions, such as `contents: read` plus only the write scopes required to publish.
 
+### `release.ghcr-publish-without-packages-write`
+
+- Severity: `medium`
+- Flags: `docker push ghcr.io/...` workflows that do not declare `packages: write`.
+- Risk: GHCR publishing may fail or encourage broader token permissions when the required package scope is missing.
+- Fix: declare `packages: write` for GHCR publishing jobs and keep other GitHub token permissions least-privilege.
+
 ## Severity Model
 
 - `critical`: likely credential exposure, artifact publishing from untrusted code, or broad write authority.

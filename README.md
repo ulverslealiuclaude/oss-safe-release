@@ -16,6 +16,7 @@ Local-first safety checks for open-source maintainers before a pull request or r
 - Package, container image, GitHub release, or release automation commands that can run from pull request workflows.
 - Package, container image, GitHub release, or release automation commands that run from unconstrained push workflows.
 - Publishing workflows that do not declare explicit GitHub token permissions.
+- GHCR container publishing without `packages: write`.
 
 The tool runs locally and does not send repository contents to any external service.
 
@@ -159,6 +160,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `release.publish-without-trusted-gate` | high | Flags push-triggered package, container image, GitHub release, or release automation publishing without a trusted release gate. |
 | `release.manual-publish-without-approval` | medium | Flags manual package, container image, GitHub release, or release automation publishing without a protected environment or confirmation input. |
 | `release.publish-without-explicit-permissions` | medium | Flags publishing workflows without explicit top-level token permissions. |
+| `release.ghcr-publish-without-packages-write` | medium | Flags GHCR publishing workflows without `packages: write`. |
 
 ## Limitations
 

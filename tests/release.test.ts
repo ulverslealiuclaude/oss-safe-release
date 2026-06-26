@@ -98,6 +98,54 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags GHCR publishing without packages write permission", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/container-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  publish:\n    steps:\n      - run: docker push ghcr.io/example/app:latest\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.ghcr-publish-without-packages-write",
+        severity: "medium",
+        filePath: ".github/workflows/container-publish.yml",
+      }),
+    );
+  });
+
+  it("does not flag GHCR publishing with packages write permission", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/container-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\n  packages: write\njobs:\n  publish:\n    steps:\n      - run: docker push ghcr.io/example/app:latest\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.ghcr-publish-without-packages-write",
+      }),
+    );
+  });
+
   it("flags GitHub release creation in pull request workflows", () => {
     const context: RepoContext = {
       rootDir: "/repo",

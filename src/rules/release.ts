@@ -6,6 +6,8 @@ const PUBLISH_COMMAND =
   /\b(npm publish|pnpm publish|yarn npm publish|twine upload|cargo publish|docker push|gh release create|npx semantic-release|semantic-release|npx release-it|release-it|changeset publish|changesets publish|pnpm changeset publish|pnpm changesets publish|npx changeset publish|npx changesets publish|yarn changeset publish|yarn changesets publish)\b/;
 const RELEASE_DRY_RUN = /\b(?:npx\s+)?(?:semantic-release|release-it)\b[^\n]*(?:^|\s)--dry-run(?:\s|$)/;
 const CHANGESETS_ACTION_WITH_PUBLISH = /uses:\s*changesets\/action@[^\n]+[\s\S]*?\n\s*publish:\s*[^\n#]+/i;
+const GHCR_DOCKER_PUSH = /\bdocker\s+push\s+ghcr\.io\//;
+const PACKAGES_WRITE_PERMISSION = /^\s*packages:\s*write\b/m;
 
 function findPublishCommandLine(content: string): string | undefined {
   const commandLine = content.split(/\r?\n/).find((line) => PUBLISH_COMMAND.test(line) && !RELEASE_DRY_RUN.test(line));
@@ -38,6 +40,18 @@ export const releaseRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, publishCommandLine),
           recommendation: "Declare least-privilege top-level permissions for release workflows, such as contents: read plus only the write scopes required to publish.",
+        });
+      }
+
+      if (GHCR_DOCKER_PUSH.test(publishCommandLine) && !PACKAGES_WRITE_PERMISSION.test(workflow.content)) {
+        findings.push({
+          ruleId: "release.ghcr-publish-without-packages-write",
+          severity: "medium",
+          title: "GHCR publishing lacks packages write permission",
+          message: "A workflow publishes a container image to ghcr.io without declaring packages: write.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, publishCommandLine),
+          recommendation: "Declare packages: write for GHCR publishing jobs and keep other GitHub token permissions least-privilege.",
         });
       }
 
