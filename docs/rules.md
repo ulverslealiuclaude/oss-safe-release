@@ -115,6 +115,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: `pull_request_target` runs in a privileged context, so publishing from that trigger can expose release authority to pull request activity.
 - Fix: do not publish artifacts from `pull_request_target`; restrict publishing to trusted tag or release events and keep `pull_request_target` workflows read-only.
 
+### `release.pull-request-target-inherits-release-secrets`
+
+- Severity: `critical`
+- Flags: `pull_request_target` workflows that call release-like reusable workflows, such as `release.yml`, `publish.yml`, or `deploy.yml`, while using `secrets: inherit`.
+- Risk: all available caller secrets can be passed from a privileged pull request context into a release workflow, increasing the blast radius of a compromised or overly broad reusable workflow.
+- Fix: do not pass inherited secrets from `pull_request_target` into release reusable workflows. Use trusted release events and pass only explicitly required secrets.
+
 ### `release.publish-without-trusted-gate`
 
 - Severity: `high`

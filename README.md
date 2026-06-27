@@ -14,6 +14,7 @@ Local-first safety checks for open-source maintainers before a pull request or r
 - Sensitive files such as `.env`, `.npmrc`, `.pypirc`, `*.pem`, and `*.key`.
 - Missing `.gitignore` coverage for local environment files.
 - Package, container image, GitHub release, or release automation commands that can run from pull request workflows, including `pull_request_target`.
+- `pull_request_target` workflows that pass all secrets into release-like reusable workflows.
 - Package, container image, GitHub release, or release automation commands that run from unconstrained push workflows.
 - Publishing workflows that do not declare explicit GitHub token permissions.
 - GHCR container publishing without `packages: write`.
@@ -168,6 +169,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `secrets.gitignore-missing-env` | medium | Flags missing `.env` coverage in `.gitignore`. |
 | `release.publish-on-pull-request` | critical | Flags package, container image, GitHub release, or release automation publishing in pull request workflows. |
 | `release.publish-on-pull-request-target` | critical | Flags package, container image, GitHub release, or release automation publishing in `pull_request_target` workflows. |
+| `release.pull-request-target-inherits-release-secrets` | critical | Flags `pull_request_target` workflows that pass all secrets into release-like reusable workflows. |
 | `release.publish-without-trusted-gate` | high | Flags push-triggered package, container image, GitHub release, or release automation publishing without a trusted release gate. |
 | `release.manual-publish-without-approval` | medium | Flags manual package, container image, GitHub release, or release automation publishing without a protected environment or confirmation input. |
 | `release.publish-without-explicit-permissions` | medium | Flags publishing workflows without explicit top-level token permissions. |

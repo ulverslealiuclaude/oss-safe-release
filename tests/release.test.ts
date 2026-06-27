@@ -50,6 +50,31 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags pull request target release workflow calls that inherit secrets", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/pr-release.yml",
+          content:
+            "on: pull_request_target\njobs:\n  publish:\n    uses: example/project/.github/workflows/release.yml@8ade135a41bc03ea155e62e844d188df1ea18608\n    secrets: inherit\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.pull-request-target-inherits-release-secrets",
+        severity: "critical",
+        filePath: ".github/workflows/pr-release.yml",
+      }),
+    );
+  });
+
   it("flags package publishing on unconstrained push workflows", () => {
     const context: RepoContext = {
       rootDir: "/repo",

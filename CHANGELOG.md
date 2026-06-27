@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Added detection for reusable workflows that accept secrets without explicit permissions.
 - Added committed secret file and `.gitignore` coverage checks.
 - Added release workflow checks for package publishing from pull request and `pull_request_target` workflows.
+- Added release workflow checks for `pull_request_target` release-like reusable workflows that inherit all secrets.
 - Added release workflow checks for push-triggered package publishing without trusted gates.
 - Added release workflow checks for manual package publishing without approval gates.
 - Added release workflow checks for Docker image publishing commands.

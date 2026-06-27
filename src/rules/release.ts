@@ -19,6 +19,8 @@ const NPM_AUTH_TOKEN_IN_RUN = /^\s*-\s*run:\s*[^\n]*secrets\.(?:NODE_AUTH_TOKEN|
 const PYPI_PACKAGE_PUBLISH = /\btwine\s+upload\b/;
 const PYPI_AUTH_TOKEN_IN_RUN = /^\s*-\s*run:\s*[^\n]*secrets\.(?:PYPI_API_TOKEN|TWINE_PASSWORD)\b/m;
 const WRITE_ALL_PERMISSION = /permissions:\s*write-all\b/;
+const SECRETS_INHERIT = /^\s*secrets:\s*inherit\b/m;
+const RELEASE_REUSABLE_WORKFLOW_CALL = /^\s*uses:\s*[^\n#]*(?:release|publish|deploy)[^\n#]*\.ya?ml@/im;
 
 function findPublishCommandLine(content: string): string | undefined {
   const commandLine = content.split(/\r?\n/).find((line) => PUBLISH_COMMAND.test(line) && !RELEASE_DRY_RUN.test(line));
@@ -29,6 +31,10 @@ function findPublishCommandLine(content: string): string | undefined {
     : PYPI_PUBLISH_ACTION.test(content)
       ? content.split(/\r?\n/).find((line) => /uses:\s*pypa\/gh-action-pypi-publish@/i.test(line))
     : undefined;
+}
+
+function findReleaseReusableWorkflowCallLine(content: string): string | undefined {
+  return content.split(/\r?\n/).find((line) => RELEASE_REUSABLE_WORKFLOW_CALL.test(line));
 }
 
 export const releaseRule: Rule = {
@@ -44,6 +50,20 @@ export const releaseRule: Rule = {
       const hasWorkflowDispatchTrigger = /on:\s*workflow_dispatch\b/.test(workflow.content) || /-\s*workflow_dispatch\b/.test(workflow.content);
       const hasEnvironmentGate = /\benvironment:\s*[^\s#]+/.test(workflow.content);
       const publishCommandLine = findPublishCommandLine(workflow.content);
+      const releaseReusableWorkflowCallLine = findReleaseReusableWorkflowCallLine(workflow.content);
+
+      if (hasPullRequestTargetTrigger && releaseReusableWorkflowCallLine && SECRETS_INHERIT.test(workflow.content)) {
+        findings.push({
+          ruleId: "release.pull-request-target-inherits-release-secrets",
+          severity: "critical",
+          title: "pull_request_target release workflow inherits all secrets",
+          message: "A pull_request_target workflow calls a release-like reusable workflow while passing all caller secrets with secrets: inherit.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, releaseReusableWorkflowCallLine),
+          recommendation:
+            "Do not pass inherited secrets from pull_request_target into release reusable workflows. Use trusted release events and pass only explicitly required secrets.",
+        });
+      }
 
       if (!publishCommandLine) continue;
 
