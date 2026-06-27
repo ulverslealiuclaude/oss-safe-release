@@ -60,6 +60,10 @@ describe("reporters", () => {
     expect(sarif.version).toBe("2.1.0");
     expect(sarif.runs[0].tool.driver.name).toBe("oss-safe-release");
     expect(sarif.runs[0].tool.driver.rules[0].id).toBe("workflow.mutable-action-ref");
+    expect(sarif.runs[0].tool.driver.rules[0].helpUri).toBe(
+      "https://github.com/ulverslealiuclaude/oss-safe-release/blob/main/docs/rules.md",
+    );
+    expect(sarif.runs[0].tool.driver.rules[0].defaultConfiguration.level).toBe("error");
     expect(sarif.runs[0].results[0].ruleId).toBe("workflow.mutable-action-ref");
     expect(sarif.runs[0].results[0].level).toBe("error");
     expect(sarif.runs[0].results[0].locations[0].physicalLocation.artifactLocation.uri).toBe(".github/workflows/ci.yml");

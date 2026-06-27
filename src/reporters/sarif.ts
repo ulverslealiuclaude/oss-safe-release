@@ -6,6 +6,7 @@ const LEVEL_BY_SEVERITY: Record<Severity, "note" | "warning" | "error"> = {
   high: "error",
   critical: "error",
 };
+const RULES_HELP_URI = "https://github.com/ulverslealiuclaude/oss-safe-release/blob/main/docs/rules.md";
 
 export function renderSarifReport(findings: Finding[]): string {
   const rulesById = new Map<string, unknown>();
@@ -18,6 +19,7 @@ export function renderSarifReport(findings: Finding[]): string {
     rulesById.set(finding.ruleId, {
       id: finding.ruleId,
       name: finding.ruleId,
+      helpUri: RULES_HELP_URI,
       shortDescription: {
         text: finding.title,
       },
@@ -29,6 +31,9 @@ export function renderSarifReport(findings: Finding[]): string {
       },
       properties: {
         severity: finding.severity,
+      },
+      defaultConfiguration: {
+        level: LEVEL_BY_SEVERITY[finding.severity],
       },
     });
   }
