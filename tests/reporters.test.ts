@@ -65,6 +65,7 @@ describe("reporters", () => {
     );
     expect(sarif.runs[0].tool.driver.rules[0].defaultConfiguration.level).toBe("error");
     expect(sarif.runs[0].results[0].ruleId).toBe("workflow.mutable-action-ref");
+    expect(sarif.runs[0].results[0].ruleIndex).toBe(0);
     expect(sarif.runs[0].results[0].level).toBe("error");
     expect(sarif.runs[0].results[0].locations[0].physicalLocation.artifactLocation.uri).toBe(".github/workflows/ci.yml");
     expect(sarif.runs[0].results[0].locations[0].physicalLocation.region.startLine).toBe(4);

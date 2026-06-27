@@ -37,6 +37,7 @@ export function renderSarifReport(findings: Finding[]): string {
       },
     });
   }
+  const ruleIndexes = new Map([...rulesById.keys()].map((ruleId, index) => [ruleId, index]));
 
   return `${JSON.stringify(
     {
@@ -53,6 +54,7 @@ export function renderSarifReport(findings: Finding[]): string {
           },
           results: findings.map((finding) => ({
             ruleId: finding.ruleId,
+            ruleIndex: ruleIndexes.get(finding.ruleId),
             level: LEVEL_BY_SEVERITY[finding.severity],
             message: {
               text: finding.message,
