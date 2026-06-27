@@ -26,6 +26,30 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags package publishing in pull request target workflows", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/publish.yml",
+          content: "on: pull_request_target\njobs:\n  publish:\n    steps:\n      - run: npm publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.publish-on-pull-request-target",
+        severity: "critical",
+        filePath: ".github/workflows/publish.yml",
+      }),
+    );
+  });
+
   it("flags package publishing on unconstrained push workflows", () => {
     const context: RepoContext = {
       rootDir: "/repo",

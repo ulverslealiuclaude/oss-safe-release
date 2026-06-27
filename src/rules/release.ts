@@ -38,6 +38,8 @@ export const releaseRule: Rule = {
 
     for (const workflow of context.workflows) {
       const hasPullRequestTrigger = /on:\s*pull_request\b/.test(workflow.content) || /-\s*pull_request\b/.test(workflow.content);
+      const hasPullRequestTargetTrigger =
+        /on:\s*pull_request_target\b/.test(workflow.content) || /-\s*pull_request_target\b/.test(workflow.content);
       const hasPushTrigger = /on:\s*push\b/.test(workflow.content) || /-\s*push\b/.test(workflow.content);
       const hasWorkflowDispatchTrigger = /on:\s*workflow_dispatch\b/.test(workflow.content) || /-\s*workflow_dispatch\b/.test(workflow.content);
       const hasEnvironmentGate = /\benvironment:\s*[^\s#]+/.test(workflow.content);
@@ -158,6 +160,20 @@ export const releaseRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, publishCommandLine),
           recommendation: "Restrict publishing to trusted tag or release events and require least-privilege permissions.",
+        });
+      }
+
+      if (hasPullRequestTargetTrigger) {
+        findings.push({
+          ruleId: "release.publish-on-pull-request-target",
+          severity: "critical",
+          title: "Artifact publishing can run from pull_request_target",
+          message:
+            "A workflow triggered by pull_request_target appears to publish a package, container image, GitHub release, or release automation.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, publishCommandLine),
+          recommendation:
+            "Do not publish artifacts from pull_request_target workflows. Restrict publishing to trusted tag or release events and keep pull_request_target workflows read-only.",
         });
       }
 

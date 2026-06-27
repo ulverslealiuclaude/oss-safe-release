@@ -107,6 +107,14 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: untrusted pull request workflows may reach package release commands.
 - Fix: restrict publishing to trusted tag, release, or protected-branch events and use least-privilege permissions.
 
+### `release.publish-on-pull-request-target`
+
+- Severity: `critical`
+- Flags: package, container image, GitHub release, or release automation commands in workflows triggered by `pull_request_target`.
+- Examples: `npm publish`, `docker push`, `gh release create`, `semantic-release`, `release-it`, `changeset publish`, and `changesets/action` with a `publish` input.
+- Risk: `pull_request_target` runs in a privileged context, so publishing from that trigger can expose release authority to pull request activity.
+- Fix: do not publish artifacts from `pull_request_target`; restrict publishing to trusted tag or release events and keep `pull_request_target` workflows read-only.
+
 ### `release.publish-without-trusted-gate`
 
 - Severity: `high`
