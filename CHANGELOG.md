@@ -37,6 +37,7 @@ All notable changes to this project will be documented in this file.
 - Added SARIF rule help links and default severity levels for code scanning.
 - Added SARIF result `ruleIndex` links to stabilize code scanning rule references.
 - Added console scan summaries with file, workflow, and rule counts.
+- Added GitHub Actions CI, SARIF upload, and report artifact documentation.
 - Added `--fail-on` to customize CI failure severity thresholds.
 - Added `oss-safe-release.config.json` support for rule and path ignores.
 - Added tests, documentation, CI configuration, and an example self-scan report.

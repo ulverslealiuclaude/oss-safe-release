@@ -121,7 +121,7 @@ Security reporting and scanner limitations are documented in [`SECURITY.md`](SEC
 
 ## GitHub Actions
 
-After publishing the package, use it in CI:
+CI and SARIF upload examples are documented in [`docs/ci.md`](docs/ci.md). After publishing the package, use it in CI:
 
 ```yaml
 name: safe release

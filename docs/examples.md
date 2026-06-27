@@ -13,7 +13,7 @@ node dist/src/cli.js scan . --markdown examples/self-scan-report.md --json examp
 Current expected console output:
 
 ```text
-oss-safe-release: no findings
+oss-safe-release: no findings; scanned 58 files, 1 workflow, 3 rules
 ```
 
 The generated example reports are:
@@ -39,7 +39,7 @@ JSON and SARIF outputs carry the same rule id, severity, location, message, and 
 
 ## CI Usage
 
-Use the default threshold to fail CI only on `high` and `critical` findings:
+Use the default threshold to fail CI only on `high` and `critical` findings. More complete CI and SARIF upload examples are documented in the [CI guide](ci.md).
 
 ```yaml
 name: safe release
