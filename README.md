@@ -21,6 +21,7 @@ Local-first safety checks for open-source maintainers before a pull request or r
 - npm provenance publishing without `id-token: write`.
 - npm token publishing without a protected GitHub environment.
 - npm token references interpolated directly into `run:` commands.
+- PyPI token references interpolated directly into `run:` commands.
 
 The tool runs locally and does not send repository contents to any external service.
 
@@ -171,6 +172,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `release.npm-provenance-without-id-token-write` | medium | Flags npm provenance publishing workflows without `id-token: write`. |
 | `release.npm-token-without-environment` | medium | Flags npm token publishing workflows without a GitHub environment gate. |
 | `release.npm-token-in-run-command` | medium | Flags npm publishing tokens interpolated directly into shell commands. |
+| `release.pypi-token-in-run-command` | medium | Flags PyPI publishing tokens interpolated directly into shell commands. |
 
 ## Limitations
 

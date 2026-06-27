@@ -163,6 +163,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: direct secret interpolation is easier to expose through command construction, logs, or future shell edits.
 - Fix: pass npm publishing tokens through step `env`, such as `NODE_AUTH_TOKEN`, instead of embedding secrets in shell commands.
 
+### `release.pypi-token-in-run-command`
+
+- Severity: `medium`
+- Flags: PyPI publishing workflows that interpolate `secrets.PYPI_API_TOKEN` or `secrets.TWINE_PASSWORD` directly into a `run:` command.
+- Risk: direct secret interpolation is easier to expose through command construction, logs, or future shell edits.
+- Fix: pass PyPI publishing tokens through step `env`, such as `TWINE_PASSWORD`, instead of embedding secrets in shell commands.
+
 ## Severity Model
 
 - `critical`: likely credential exposure, artifact publishing from untrusted code, or broad write authority.

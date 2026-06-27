@@ -620,6 +620,54 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags PyPI token references directly inside run commands", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/pypi-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  publish:\n    environment: pypi-release\n    steps:\n      - run: twine upload dist/* -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.pypi-token-in-run-command",
+        severity: "medium",
+        filePath: ".github/workflows/pypi-publish.yml",
+      }),
+    );
+  });
+
+  it("does not flag PyPI tokens passed through step env", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/pypi-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  publish:\n    environment: pypi-release\n    steps:\n      - run: twine upload dist/*\n        env:\n          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.pypi-token-in-run-command",
+      }),
+    );
+  });
+
   it("flags manual package publishing without an environment or confirmation input", () => {
     const context: RepoContext = {
       rootDir: "/repo",
