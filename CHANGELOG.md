@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file.
 - Added release workflow checks for npm token publishing without a protected environment.
 - Added release workflow checks for npm token interpolation inside shell commands.
 - Added release workflow checks for PyPI token interpolation inside shell commands.
+- Added release workflow checks for PyPI trusted publishing without `id-token: write`.
 - Added Markdown and JSON report output.
 - Added optional SARIF report output for GitHub code scanning workflows.
 - Added console scan summaries with file, workflow, and rule counts.

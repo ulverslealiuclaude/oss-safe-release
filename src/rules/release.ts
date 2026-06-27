@@ -6,6 +6,7 @@ const PUBLISH_COMMAND =
   /\b(npm publish|pnpm publish|yarn npm publish|twine upload|cargo publish|docker push|gh release create|npx semantic-release|semantic-release|npx release-it|release-it|changeset publish|changesets publish|pnpm changeset publish|pnpm changesets publish|npx changeset publish|npx changesets publish|yarn changeset publish|yarn changesets publish)\b/;
 const RELEASE_DRY_RUN = /\b(?:npx\s+)?(?:semantic-release|release-it)\b[^\n]*(?:^|\s)--dry-run(?:\s|$)/;
 const CHANGESETS_ACTION_WITH_PUBLISH = /uses:\s*changesets\/action@[^\n]+[\s\S]*?\n\s*publish:\s*[^\n#]+/i;
+const PYPI_PUBLISH_ACTION = /uses:\s*pypa\/gh-action-pypi-publish@/i;
 const GHCR_DOCKER_PUSH = /\bdocker\s+push\s+ghcr\.io\//;
 const PACKAGES_WRITE_PERMISSION = /^\s*packages:\s*write\b/m;
 const GITHUB_RELEASE_CREATE = /\bgh\s+release\s+create\b/;
@@ -25,6 +26,8 @@ function findPublishCommandLine(content: string): string | undefined {
 
   return CHANGESETS_ACTION_WITH_PUBLISH.test(content)
     ? content.split(/\r?\n/).find((line) => /uses:\s*changesets\/action@/i.test(line))
+    : PYPI_PUBLISH_ACTION.test(content)
+      ? content.split(/\r?\n/).find((line) => /uses:\s*pypa\/gh-action-pypi-publish@/i.test(line))
     : undefined;
 }
 
@@ -131,6 +134,18 @@ export const releaseRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, "secrets.PYPI_API_TOKEN") ?? findLine(workflow.content, "secrets.TWINE_PASSWORD"),
           recommendation: "Pass PyPI publishing tokens through step env, such as TWINE_PASSWORD, instead of interpolating secrets directly into run commands.",
+        });
+      }
+
+      if (PYPI_PUBLISH_ACTION.test(publishCommandLine) && !ID_TOKEN_WRITE_PERMISSION.test(workflow.content) && !WRITE_ALL_PERMISSION.test(workflow.content)) {
+        findings.push({
+          ruleId: "release.pypi-trusted-publishing-without-id-token-write",
+          severity: "medium",
+          title: "PyPI trusted publishing lacks id-token write permission",
+          message: "A workflow uses pypa/gh-action-pypi-publish without declaring id-token: write.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, publishCommandLine),
+          recommendation: "Declare id-token: write for PyPI trusted publishing jobs and keep other GitHub token permissions least-privilege.",
         });
       }
 

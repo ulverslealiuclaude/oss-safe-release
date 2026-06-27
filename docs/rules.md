@@ -170,6 +170,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: direct secret interpolation is easier to expose through command construction, logs, or future shell edits.
 - Fix: pass PyPI publishing tokens through step `env`, such as `TWINE_PASSWORD`, instead of embedding secrets in shell commands.
 
+### `release.pypi-trusted-publishing-without-id-token-write`
+
+- Severity: `medium`
+- Flags: workflows that use `pypa/gh-action-pypi-publish` without declaring `id-token: write`.
+- Risk: PyPI trusted publishing may fail because GitHub Actions cannot mint the OIDC token required for publishing.
+- Fix: declare `id-token: write` for PyPI trusted publishing jobs and keep other GitHub token permissions least-privilege.
+
 ## Severity Model
 
 - `critical`: likely credential exposure, artifact publishing from untrusted code, or broad write authority.

@@ -668,6 +668,54 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags PyPI trusted publishing without id-token write permission", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/pypi-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\njobs:\n  publish:\n    environment: pypi-release\n    steps:\n      - uses: pypa/gh-action-pypi-publish@8ade135a41bc03ea155e62e844d188df1ea18608\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.pypi-trusted-publishing-without-id-token-write",
+        severity: "medium",
+        filePath: ".github/workflows/pypi-publish.yml",
+      }),
+    );
+  });
+
+  it("does not flag PyPI trusted publishing with id-token write permission", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/pypi-publish.yml",
+          content:
+            "on: release\npermissions:\n  contents: read\n  id-token: write\njobs:\n  publish:\n    environment: pypi-release\n    steps:\n      - uses: pypa/gh-action-pypi-publish@8ade135a41bc03ea155e62e844d188df1ea18608\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.pypi-trusted-publishing-without-id-token-write",
+      }),
+    );
+  });
+
   it("flags manual package publishing without an environment or confirmation input", () => {
     const context: RepoContext = {
       rootDir: "/repo",
