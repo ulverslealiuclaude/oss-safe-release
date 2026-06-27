@@ -1,4 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { describe, expect, it, vi } from "vitest";
 import { createProgram, shouldFailForFindings } from "../src/cli";
 import type { Finding } from "../src/types";
 
@@ -57,5 +60,40 @@ describe("createProgram", () => {
       "process.exit unexpectedly called",
     );
     expect(errorOutput).toContain("Allowed choices are low, medium, high, critical, none");
+  });
+
+  it("creates report output directories when they do not exist", async () => {
+    const root = await mkdtemp(join(tmpdir(), "oss-safe-release-cli-"));
+    await mkdir(join(root, ".github/workflows"), { recursive: true });
+    await writeFile(join(root, ".github/workflows/ci.yml"), "name: ci\n");
+    await writeFile(join(root, ".gitignore"), ".env\n");
+    const program = createProgram();
+    program.exitOverride();
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    try {
+      await program.parseAsync([
+        "node",
+        "oss-safe-release",
+        "scan",
+        root,
+        "--markdown",
+        "reports/nested/safe-release.md",
+        "--json",
+        "reports/nested/safe-release.json",
+        "--sarif",
+        "reports/nested/safe-release.sarif",
+        "--fail-on",
+        "none",
+      ]);
+    } finally {
+      stdout.mockRestore();
+    }
+
+    await expect(readFile(join(root, "reports/nested/safe-release.md"), "utf8")).resolves.toContain("# oss-safe-release report");
+    await expect(readFile(join(root, "reports/nested/safe-release.json"), "utf8")).resolves.toContain('"findings"');
+    await expect(readFile(join(root, "reports/nested/safe-release.sarif"), "utf8")).resolves.toContain('"version": "2.1.0"');
+
+    await rm(root, { recursive: true, force: true });
   });
 });

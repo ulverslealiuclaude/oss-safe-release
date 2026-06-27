@@ -65,6 +65,8 @@ The CLI exits with code `1` when it finds `high` or `critical` findings. This ma
 
 Console output includes the finding count, severity breakdown, and scan summary so maintainers can quickly confirm the number of files, workflows, and built-in rules evaluated.
 
+When report paths include directories, the CLI creates those output directories automatically.
+
 Adjust the CI failure threshold:
 
 ```bash

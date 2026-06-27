@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
 import { Command, Option } from "commander";
 import { renderConsoleSummary } from "./reporters/console";
 import { renderJsonReport } from "./reporters/json";
@@ -49,16 +49,22 @@ export function createProgram(): Command {
     .action(async (targetPath: string, options: { markdown: string; json: string; sarif?: string; failOn: FailOnSeverity }) => {
       const rootDir = resolve(targetPath);
       const result = await scanRepository(rootDir);
-      await writeFile(resolve(rootDir, options.markdown), renderMarkdownReport(result.findings));
-      await writeFile(resolve(rootDir, options.json), renderJsonReport(result.findings));
+      await writeReportFile(rootDir, options.markdown, renderMarkdownReport(result.findings));
+      await writeReportFile(rootDir, options.json, renderJsonReport(result.findings));
       if (options.sarif !== undefined) {
-        await writeFile(resolve(rootDir, options.sarif), renderSarifReport(result.findings));
+        await writeReportFile(rootDir, options.sarif, renderSarifReport(result.findings));
       }
       process.stdout.write(renderConsoleSummary(result.findings, result.summary));
       process.exitCode = shouldFailForFindings(result.findings, options.failOn) ? 1 : 0;
     });
 
   return program;
+}
+
+async function writeReportFile(rootDir: string, outputPath: string, content: string): Promise<void> {
+  const resolvedPath = resolve(rootDir, outputPath);
+  await mkdir(dirname(resolvedPath), { recursive: true });
+  await writeFile(resolvedPath, content);
 }
 
 if (require.main === module) {

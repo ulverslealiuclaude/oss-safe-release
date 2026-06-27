@@ -54,7 +54,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
-      - run: mkdir -p reports && npx oss-safe-release scan --sarif reports/oss-safe-release.sarif --fail-on high
+      - run: npx oss-safe-release scan --sarif reports/oss-safe-release.sarif --fail-on high
       - uses: github/codeql-action/upload-sarif@<pinned-commit-sha>
         if: always()
         with:
@@ -68,7 +68,7 @@ Keep `security-events: write` scoped to workflows that upload SARIF. Scanner-onl
 For pull request review, store Markdown and JSON reports as workflow artifacts:
 
 ```yaml
-- run: mkdir -p reports && npx oss-safe-release scan --markdown reports/oss-safe-release.md --json reports/oss-safe-release.json --fail-on high
+- run: npx oss-safe-release scan --markdown reports/oss-safe-release.md --json reports/oss-safe-release.json --fail-on high
 - uses: actions/upload-artifact@<pinned-commit-sha>
   if: always()
   with:
