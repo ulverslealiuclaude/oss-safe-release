@@ -95,4 +95,10 @@ If a finding is intentional, prefer a narrow ignore in `oss-safe-release.config.
 }
 ```
 
+For monorepos or CI jobs that keep scanner policy elsewhere, pass an explicit config path:
+
+```bash
+npx oss-safe-release scan . --config config/oss-safe-release.json
+```
+
 Avoid broad ignores unless the repository has a documented policy explaining why the pattern is safe.

@@ -36,6 +36,13 @@ describe("createProgram", () => {
     expect(scanCommand?.options.map((option) => option.long)).toContain("--fail-on");
   });
 
+  it("defines the config option", () => {
+    const program = createProgram();
+    const scanCommand = program.commands.find((command) => command.name() === "scan");
+
+    expect(scanCommand?.options.map((option) => option.long)).toContain("--config");
+  });
+
   it("fails only on high or critical findings by default", () => {
     expect(shouldFailForFindings([mediumFinding], "high")).toBe(false);
     expect(shouldFailForFindings([{ ...mediumFinding, severity: "high" }], "high")).toBe(true);
@@ -95,5 +102,68 @@ describe("createProgram", () => {
     await expect(readFile(join(root, "reports/nested/safe-release.sarif"), "utf8")).resolves.toContain('"version": "2.1.0"');
 
     await rm(root, { recursive: true, force: true });
+  });
+
+  it("uses an explicit config file for ignores", async () => {
+    const root = await mkdtemp(join(tmpdir(), "oss-safe-release-cli-"));
+    await mkdir(join(root, ".github/workflows"), { recursive: true });
+    await mkdir(join(root, "config"), { recursive: true });
+    await writeFile(join(root, ".github/workflows/ci.yml"), "permissions: write-all\n");
+    await writeFile(join(root, ".gitignore"), ".env\n");
+    await writeFile(
+      join(root, "config/safe-release.json"),
+      JSON.stringify({
+        ignore: [
+          {
+            ruleId: "workflow.write-all-permissions",
+            path: ".github/workflows/ci.yml",
+          },
+        ],
+      }),
+    );
+    const program = createProgram();
+    program.exitOverride();
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    try {
+      await program.parseAsync([
+        "node",
+        "oss-safe-release",
+        "scan",
+        root,
+        "--config",
+        "config/safe-release.json",
+        "--json",
+        "reports/safe-release.json",
+        "--fail-on",
+        "low",
+      ]);
+    } finally {
+      stdout.mockRestore();
+    }
+
+    await expect(readFile(join(root, "reports/safe-release.json"), "utf8")).resolves.toContain('"findings": []');
+    expect(process.exitCode).toBe(0);
+
+    await rm(root, { recursive: true, force: true });
+  });
+
+  it("rejects a missing explicit config file", async () => {
+    const root = await mkdtemp(join(tmpdir(), "oss-safe-release-cli-"));
+    await mkdir(join(root, ".github/workflows"), { recursive: true });
+    await writeFile(join(root, ".github/workflows/ci.yml"), "name: ci\n");
+    await writeFile(join(root, ".gitignore"), ".env\n");
+    const program = createProgram();
+    program.exitOverride();
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    try {
+      await expect(
+        program.parseAsync(["node", "oss-safe-release", "scan", root, "--config", "config/missing.json", "--fail-on", "none"]),
+      ).rejects.toThrow("Config file not found");
+    } finally {
+      stdout.mockRestore();
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });

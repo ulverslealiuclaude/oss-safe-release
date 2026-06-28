@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import { discoverRepoFiles } from "./files";
 import { releaseRule } from "./rules/release";
 import { secretsRule } from "./rules/secrets";
@@ -13,7 +15,11 @@ export interface ScanResult {
   summary: ScanSummary;
 }
 
-export async function scanRepository(rootDir: string): Promise<ScanResult> {
+export interface ScanOptions {
+  configPath?: string;
+}
+
+export async function scanRepository(rootDir: string, options: ScanOptions = {}): Promise<ScanResult> {
   const files = await discoverRepoFiles(rootDir);
   const workflows = parseWorkflowFiles(files);
   const context: RepoContext = {
@@ -21,7 +27,7 @@ export async function scanRepository(rootDir: string): Promise<ScanResult> {
     files,
     workflows,
   };
-  const config = loadConfig(files);
+  const config = await loadConfig(rootDir, files, options.configPath);
   const findings = applyIgnores(BUILT_IN_RULES.flatMap((rule) => rule.run(context)), config.ignore ?? []);
 
   return {
@@ -38,17 +44,26 @@ export async function scanRepository(rootDir: string): Promise<ScanResult> {
   };
 }
 
-function loadConfig(files: { path: string; content: string }[]): ScannerConfig {
-  const configFile = files.find((file) => file.path === "oss-safe-release.config.json");
-  if (!configFile) return {};
+async function loadConfig(rootDir: string, files: { path: string; content: string }[], configPath?: string): Promise<ScannerConfig> {
+  const content = configPath === undefined ? files.find((file) => file.path === "oss-safe-release.config.json")?.content : await readConfigFile(rootDir, configPath);
+  if (content === undefined) return {};
 
   try {
-    const parsed = JSON.parse(configFile.content) as ScannerConfig;
+    const parsed = JSON.parse(content) as ScannerConfig;
     return {
       ignore: Array.isArray(parsed.ignore) ? parsed.ignore.filter(isIgnoreEntry) : [],
     };
   } catch {
     return {};
+  }
+}
+
+async function readConfigFile(rootDir: string, configPath: string): Promise<string | undefined> {
+  const resolvedPath = resolve(rootDir, configPath);
+  try {
+    return await readFile(resolvedPath, "utf8");
+  } catch {
+    throw new Error(`Config file not found: ${resolvedPath}`);
   }
 }
 

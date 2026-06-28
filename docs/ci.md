@@ -30,6 +30,14 @@ jobs:
 
 Use `--fail-on medium` for stricter repositories, or `--fail-on none` when collecting reports without failing CI.
 
+If the scanner policy file is not named `oss-safe-release.config.json` at the repository root, pass it explicitly:
+
+```yaml
+- run: npx oss-safe-release scan --config config/oss-safe-release.json --fail-on high
+```
+
+The scan fails when an explicit `--config` path cannot be read, which prevents CI from silently ignoring a moved or misspelled policy file.
+
 ## SARIF Upload
 
 Upload SARIF when the repository uses GitHub code scanning:

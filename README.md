@@ -76,9 +76,15 @@ npx oss-safe-release scan . --fail-on medium
 
 Valid thresholds are `low`, `medium`, `high`, `critical`, and `none`. The default is `high`.
 
+Use an explicit config file:
+
+```bash
+npx oss-safe-release scan . --config config/oss-safe-release.json
+```
+
 ## Configuration
 
-Use `oss-safe-release.config.json` to ignore intentional findings by rule id and, optionally, path:
+Use `oss-safe-release.config.json` in the repository root, or pass `--config <path>`, to ignore intentional findings by rule id and, optionally, path. When `--config` is provided, the scan fails if that file cannot be read.
 
 ```json
 {

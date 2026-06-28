@@ -37,6 +37,7 @@ export function createProgram(): Command {
     .option("--markdown <path>", "write Markdown report", "safe-release-report.md")
     .option("--json <path>", "write JSON report", "safe-release-report.json")
     .option("--sarif <path>", "write SARIF report for code scanning")
+    .option("--config <path>", "read scanner config from an explicit JSON file")
     .addOption(
       new Option("--fail-on <severity>", "exit with code 1 on findings at or above severity").choices([
         "low",
@@ -46,9 +47,9 @@ export function createProgram(): Command {
         "none",
       ]).default("high"),
     )
-    .action(async (targetPath: string, options: { markdown: string; json: string; sarif?: string; failOn: FailOnSeverity }) => {
+    .action(async (targetPath: string, options: { markdown: string; json: string; sarif?: string; config?: string; failOn: FailOnSeverity }) => {
       const rootDir = resolve(targetPath);
-      const result = await scanRepository(rootDir);
+      const result = await scanRepository(rootDir, { configPath: options.config });
       await writeReportFile(rootDir, options.markdown, renderMarkdownReport(result.findings));
       await writeReportFile(rootDir, options.json, renderJsonReport(result.findings));
       if (options.sarif !== undefined) {
