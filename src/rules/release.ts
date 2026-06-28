@@ -21,6 +21,7 @@ const PYPI_AUTH_TOKEN_IN_RUN = /^\s*-\s*run:\s*[^\n]*secrets\.(?:PYPI_API_TOKEN|
 const WRITE_ALL_PERMISSION = /permissions:\s*write-all\b/;
 const SECRETS_INHERIT = /^\s*secrets:\s*inherit\b/m;
 const RELEASE_REUSABLE_WORKFLOW_CALL = /^\s*uses:\s*[^\n#]*(?:release|publish|deploy)[^\n#]*\.ya?ml@/im;
+const CONFIRMATION_INPUT_GUARD = /^\s*if:\s*[^\n#]*(?:github\.event\.inputs|inputs)\.(?:confirm|confirmation|approve|approval)\b/m;
 
 function findPublishCommandLine(content: string): string | undefined {
   const commandLine = content.split(/\r?\n/).find((line) => PUBLISH_COMMAND.test(line) && !RELEASE_DRY_RUN.test(line));
@@ -211,19 +212,16 @@ export const releaseRule: Rule = {
         });
       }
 
-      const hasConfirmationInput = /\b(confirm|confirmation|approve|approval):\s*\n|\b(confirm|confirmation|approve|approval):\s*[^\n]+/.test(
-        workflow.content,
-      );
-      if (hasWorkflowDispatchTrigger && !hasEnvironmentGate && !hasConfirmationInput) {
+      if (hasWorkflowDispatchTrigger && !hasEnvironmentGate && !CONFIRMATION_INPUT_GUARD.test(workflow.content)) {
         findings.push({
           ruleId: "release.manual-publish-without-approval",
           severity: "medium",
           title: "Manual artifact publishing lacks an approval gate",
           message:
-            "A workflow_dispatch release workflow publishes a package, container image, GitHub release, or release automation without an environment gate or confirmation input.",
+            "A workflow_dispatch release workflow publishes a package, container image, GitHub release, or release automation without an environment gate or checked confirmation input.",
           filePath: workflow.path,
           line: findLine(workflow.content, "workflow_dispatch"),
-          recommendation: "Use a protected GitHub environment or require an explicit confirmation input before publishing.",
+          recommendation: "Use a protected GitHub environment or require an explicit confirmation input that is checked by a job or step if condition before publishing.",
         });
       }
     }

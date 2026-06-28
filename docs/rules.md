@@ -132,9 +132,9 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 ### `release.manual-publish-without-approval`
 
 - Severity: `medium`
-- Flags: `workflow_dispatch` package, container image, GitHub release, or release automation without a protected environment or confirmation input.
+- Flags: `workflow_dispatch` package, container image, GitHub release, or release automation without a protected environment or checked confirmation input.
 - Risk: manual release workflows can be triggered without a second safety check.
-- Fix: use a protected GitHub environment or require an explicit confirmation input before publishing.
+- Fix: use a protected GitHub environment or require an explicit confirmation input that is checked by a job or step `if:` condition before publishing.
 
 ### `release.publish-without-explicit-permissions`
 

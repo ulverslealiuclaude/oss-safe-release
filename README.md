@@ -171,7 +171,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `release.publish-on-pull-request-target` | critical | Flags package, container image, GitHub release, or release automation publishing in `pull_request_target` workflows. |
 | `release.pull-request-target-inherits-release-secrets` | critical | Flags `pull_request_target` workflows that pass all secrets into release-like reusable workflows. |
 | `release.publish-without-trusted-gate` | high | Flags push-triggered package, container image, GitHub release, or release automation publishing without a trusted release gate. |
-| `release.manual-publish-without-approval` | medium | Flags manual package, container image, GitHub release, or release automation publishing without a protected environment or confirmation input. |
+| `release.manual-publish-without-approval` | medium | Flags manual package, container image, GitHub release, or release automation publishing without a protected environment or checked confirmation input. |
 | `release.publish-without-explicit-permissions` | medium | Flags publishing workflows without explicit top-level token permissions. |
 | `release.ghcr-publish-without-packages-write` | medium | Flags GHCR publishing workflows without `packages: write`. |
 | `release.github-release-without-contents-write` | medium | Flags GitHub Release publishing workflows without `contents: write`. |

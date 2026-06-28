@@ -789,6 +789,31 @@ describe("releaseRule", () => {
     );
   });
 
+  it("flags manual package publishing when confirmation input is not checked", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/manual-publish.yml",
+          content:
+            "on:\n  workflow_dispatch:\n    inputs:\n      confirm:\n        required: true\njobs:\n  publish:\n    steps:\n      - run: npm publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = releaseRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "release.manual-publish-without-approval",
+        severity: "medium",
+        filePath: ".github/workflows/manual-publish.yml",
+      }),
+    );
+  });
+
   it("does not flag manual package publishing with a protected environment", () => {
     const context: RepoContext = {
       rootDir: "/repo",
