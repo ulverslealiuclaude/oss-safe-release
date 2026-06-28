@@ -43,6 +43,7 @@ node dist/src/cli.js scan . --markdown work/self-report.md --json work/self-repo
 - Create public repository: complete.
 - Push local git history to `origin/main`: complete.
 - Confirm CI passes.
+- Apply public repository settings from `docs/repository-settings.md`.
 - Review `docs/release-drafts/v0.1.0.md` and use it as the GitHub Release body.
 - Add repository topics:
   - `github-actions`
