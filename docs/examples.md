@@ -65,6 +65,12 @@ jobs:
 
 Use `--fail-on medium` for stricter repositories, or `--fail-on none` when collecting reports without failing CI.
 
+Use `--quiet` to generate reports without printing the console summary:
+
+```bash
+npx oss-safe-release scan . --quiet --markdown reports/safe-release.md --json reports/safe-release.json
+```
+
 ## SARIF Usage
 
 SARIF output is intended for repositories that already use GitHub code scanning or another SARIF consumer. Generate it with:

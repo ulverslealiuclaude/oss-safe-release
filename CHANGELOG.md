@@ -40,6 +40,7 @@ All notable changes to this project will be documented in this file.
 - Added console scan summaries with file, workflow, and rule counts.
 - Added GitHub Actions CI, SARIF upload, and report artifact documentation.
 - Added automatic directory creation for Markdown, JSON, and SARIF report outputs.
+- Added `--quiet` to suppress console summaries while still writing reports and exit status.
 - Added `--fail-on` to customize CI failure severity thresholds.
 - Added `--config` to read scanner ignores from an explicit JSON config file.
 - Added `oss-safe-release.config.json` support for rule and path ignores.

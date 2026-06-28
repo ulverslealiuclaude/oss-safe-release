@@ -30,6 +30,12 @@ jobs:
 
 Use `--fail-on medium` for stricter repositories, or `--fail-on none` when collecting reports without failing CI.
 
+Use `--quiet` when CI should keep only report files and suppress the console summary:
+
+```yaml
+- run: npx oss-safe-release scan --quiet --markdown reports/oss-safe-release.md --json reports/oss-safe-release.json --fail-on high
+```
+
 If the scanner policy file is not named `oss-safe-release.config.json` at the repository root, pass it explicitly:
 
 ```yaml

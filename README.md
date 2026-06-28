@@ -68,6 +68,12 @@ Console output includes the finding count, severity breakdown, and scan summary 
 
 When report paths include directories, the CLI creates those output directories automatically.
 
+Suppress console output while still writing reports:
+
+```bash
+npx oss-safe-release scan . --quiet --json reports/safe-release.json
+```
+
 Adjust the CI failure threshold:
 
 ```bash

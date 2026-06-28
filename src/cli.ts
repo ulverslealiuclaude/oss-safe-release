@@ -38,6 +38,7 @@ export function createProgram(): Command {
     .option("--json <path>", "write JSON report", "safe-release-report.json")
     .option("--sarif <path>", "write SARIF report for code scanning")
     .option("--config <path>", "read scanner config from an explicit JSON file")
+    .option("--quiet", "suppress console summary output")
     .addOption(
       new Option("--fail-on <severity>", "exit with code 1 on findings at or above severity").choices([
         "low",
@@ -47,17 +48,24 @@ export function createProgram(): Command {
         "none",
       ]).default("high"),
     )
-    .action(async (targetPath: string, options: { markdown: string; json: string; sarif?: string; config?: string; failOn: FailOnSeverity }) => {
-      const rootDir = resolve(targetPath);
-      const result = await scanRepository(rootDir, { configPath: options.config });
-      await writeReportFile(rootDir, options.markdown, renderMarkdownReport(result.findings));
-      await writeReportFile(rootDir, options.json, renderJsonReport(result.findings));
-      if (options.sarif !== undefined) {
-        await writeReportFile(rootDir, options.sarif, renderSarifReport(result.findings));
-      }
-      process.stdout.write(renderConsoleSummary(result.findings, result.summary));
-      process.exitCode = shouldFailForFindings(result.findings, options.failOn) ? 1 : 0;
-    });
+    .action(
+      async (
+        targetPath: string,
+        options: { markdown: string; json: string; sarif?: string; config?: string; quiet?: boolean; failOn: FailOnSeverity },
+      ) => {
+        const rootDir = resolve(targetPath);
+        const result = await scanRepository(rootDir, { configPath: options.config });
+        await writeReportFile(rootDir, options.markdown, renderMarkdownReport(result.findings));
+        await writeReportFile(rootDir, options.json, renderJsonReport(result.findings));
+        if (options.sarif !== undefined) {
+          await writeReportFile(rootDir, options.sarif, renderSarifReport(result.findings));
+        }
+        if (options.quiet !== true) {
+          process.stdout.write(renderConsoleSummary(result.findings, result.summary));
+        }
+        process.exitCode = shouldFailForFindings(result.findings, options.failOn) ? 1 : 0;
+      },
+    );
 
   return program;
 }

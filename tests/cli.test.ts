@@ -43,6 +43,13 @@ describe("createProgram", () => {
     expect(scanCommand?.options.map((option) => option.long)).toContain("--config");
   });
 
+  it("defines the quiet option", () => {
+    const program = createProgram();
+    const scanCommand = program.commands.find((command) => command.name() === "scan");
+
+    expect(scanCommand?.options.map((option) => option.long)).toContain("--quiet");
+  });
+
   it("fails only on high or critical findings by default", () => {
     expect(shouldFailForFindings([mediumFinding], "high")).toBe(false);
     expect(shouldFailForFindings([{ ...mediumFinding, severity: "high" }], "high")).toBe(true);
@@ -165,5 +172,26 @@ describe("createProgram", () => {
       stdout.mockRestore();
       await rm(root, { recursive: true, force: true });
     }
+  });
+
+  it("suppresses console summary in quiet mode while writing reports", async () => {
+    const root = await mkdtemp(join(tmpdir(), "oss-safe-release-cli-"));
+    await mkdir(join(root, ".github/workflows"), { recursive: true });
+    await writeFile(join(root, ".github/workflows/ci.yml"), "name: ci\n");
+    await writeFile(join(root, ".gitignore"), ".env\n");
+    const program = createProgram();
+    program.exitOverride();
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    try {
+      await program.parseAsync(["node", "oss-safe-release", "scan", root, "--quiet", "--json", "reports/safe-release.json", "--fail-on", "none"]);
+    } finally {
+      stdout.mockRestore();
+    }
+
+    expect(stdout).not.toHaveBeenCalled();
+    await expect(readFile(join(root, "reports/safe-release.json"), "utf8")).resolves.toContain('"findings"');
+
+    await rm(root, { recursive: true, force: true });
   });
 });
