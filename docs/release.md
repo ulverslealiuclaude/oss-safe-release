@@ -43,7 +43,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-Use the matching `CHANGELOG.md` section and [`docs/release-notes/v0.1.0.md`](release-notes/v0.1.0.md) as the release notes source. Do not publish to npm until package ownership and npm account details are confirmed.
+Use the matching `CHANGELOG.md` section, [`docs/release-notes/v0.1.0.md`](release-notes/v0.1.0.md), and the GitHub release draft at [`docs/release-drafts/v0.1.0.md`](release-drafts/v0.1.0.md) as the release notes source. Do not publish to npm until package ownership and npm account details are confirmed.
 
 Attach or reference the generated self-scan reports in the release notes when useful:
 
