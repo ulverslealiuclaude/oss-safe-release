@@ -1,1 +1,5 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability report
+    url: https://github.com/ulverslealiuclaude/oss-safe-release/security/policy
+    about: Report security vulnerabilities privately instead of opening a public issue.

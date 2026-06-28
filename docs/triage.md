@@ -67,6 +67,17 @@ Reject or defer rule requests when:
 
 New rules should include tests, documentation, and stable rule ids.
 
+## Documentation Reports
+
+Use `.github/ISSUE_TEMPLATE/documentation.yml`.
+
+Before accepting a documentation issue:
+
+- Confirm the affected page or file is named.
+- Confirm the unclear, outdated, or missing content is described.
+- Prefer small documentation changes that keep examples consistent with current CLI behavior.
+- Keep command examples aligned with `README.md`, `docs/ci.md`, and `docs/examples.md`.
+
 ## Release Impact
 
 Before merging release-related changes:

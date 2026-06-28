@@ -1,0 +1,29 @@
+name: Documentation improvement
+description: Report unclear, outdated, or missing documentation.
+title: "docs: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not include secrets, private repository contents, private emails, OpenAI organization IDs, or account identifiers.
+  - type: input
+    id: page
+    attributes:
+      label: Page or file
+      description: Which README section, docs page, or example needs attention?
+      placeholder: "README.md#usage or docs/ci.md"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is unclear or missing?
+      description: Describe the documentation problem.
+    validations:
+      required: true
+  - type: textarea
+    id: suggested
+    attributes:
+      label: Suggested improvement
+      description: If you have a proposed wording or example, include it here.
