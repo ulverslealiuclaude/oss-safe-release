@@ -60,6 +60,13 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 - Risk: registry credentials can be exposed through shell history, process arguments, or logs.
 - Fix: pass credentials through standard input with `docker login --password-stdin`.
 
+### `workflow.secret-interpolation-in-run`
+
+- Severity: `medium`
+- Flags: `run:` commands that directly interpolate GitHub Actions secrets, such as `${{ secrets.NPM_TOKEN }}`.
+- Risk: direct secret interpolation is easier to expose through command construction, process arguments, logs, or future shell edits.
+- Fix: pass secrets through step `env` and reference the environment variable inside the script.
+
 ### `workflow.unpinned-global-install`
 
 - Severity: `medium`

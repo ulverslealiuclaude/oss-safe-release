@@ -200,6 +200,54 @@ describe("workflowActionsRule", () => {
     );
   });
 
+  it("flags secrets interpolated directly in run commands", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/release.yml",
+          content:
+            "on: push\njobs:\n  release:\n    steps:\n      - run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.secret-interpolation-in-run",
+        severity: "medium",
+        filePath: ".github/workflows/release.yml",
+      }),
+    );
+  });
+
+  it("does not flag secrets passed through step env", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/release.yml",
+          content:
+            "on: push\njobs:\n  release:\n    steps:\n      - run: npm publish\n        env:\n          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).not.toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.secret-interpolation-in-run",
+      }),
+    );
+  });
+
   it("does not flag docker login commands that use password stdin", () => {
     const context: RepoContext = {
       rootDir: "/repo",

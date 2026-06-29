@@ -176,6 +176,7 @@ Detailed rule rationale and remediation guidance is documented in [`docs/rules.m
 | `workflow.untrusted-context-in-run` | high | Flags shell steps that directly interpolate untrusted GitHub event context. |
 | `workflow.remote-script-pipe` | high | Flags workflows that pipe remote installer scripts directly into a shell. |
 | `workflow.docker-login-password-arg` | medium | Flags `docker login` commands that pass registry passwords as command arguments. |
+| `workflow.secret-interpolation-in-run` | medium | Flags `run:` commands that directly interpolate GitHub Actions secrets. |
 | `workflow.unpinned-global-install` | medium | Flags workflows that globally install package-manager tools without fixed versions. |
 | `workflow.reusable-workflow-secrets-inherit` | high | Flags reusable workflow calls that pass all caller secrets with `secrets: inherit`. |
 | `workflow.workflow-call-secrets-without-permissions` | medium | Flags reusable workflows that accept secrets without explicit top-level permissions. |

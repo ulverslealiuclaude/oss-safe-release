@@ -10,6 +10,7 @@ const TOP_LEVEL_PERMISSIONS = /^permissions:\s*/m;
 const DOWNLOAD_ARTIFACT_ACTION = /uses:\s*actions\/download-artifact@/i;
 const CACHE_ACTION = /uses:\s*actions\/cache(?:\/(?:restore|save))?@/i;
 const DOCKER_LOGIN_PASSWORD_ARG = /\bdocker\s+login\b(?=[^\n]*(?:--password(?:\s+|=)|(?:^|\s)-p(?:\s+|=)))(?![^\n]*--password-stdin\b)/i;
+const SECRET_INTERPOLATION_IN_RUN = /^\s*-?\s*run:\s*[^\n]*\$\{\{\s*secrets\.[A-Z0-9_]+\s*\}\}/i;
 const PACKAGE_NAME = "(?:@[a-z0-9_.-]+\\/)?[a-z0-9_.-]+";
 const UNPINNED_GLOBAL_INSTALL = new RegExp(
   `\\b(?:(?:npm|pnpm)\\s+(?:install|i|add)\\s+(?:--global|-g)\\s+${PACKAGE_NAME}|yarn\\s+global\\s+add\\s+${PACKAGE_NAME})(?:\\s|$)`,
@@ -126,6 +127,19 @@ export const workflowActionsRule: Rule = {
           filePath: workflow.path,
           line: findLine(workflow.content, dockerLoginPasswordArgLine),
           recommendation: "Pass registry credentials through standard input with docker login --password-stdin.",
+        });
+      }
+
+      const secretInterpolationInRunLine = workflow.content.split(/\r?\n/).find((line) => SECRET_INTERPOLATION_IN_RUN.test(line));
+      if (secretInterpolationInRunLine) {
+        findings.push({
+          ruleId: "workflow.secret-interpolation-in-run",
+          severity: "medium",
+          title: "Run step interpolates a GitHub secret directly",
+          message: "A shell command directly interpolates a GitHub Actions secret.",
+          filePath: workflow.path,
+          line: findLine(workflow.content, secretInterpolationInRunLine),
+          recommendation: "Pass secrets through step env and reference the environment variable inside the script instead of embedding secrets in run commands.",
         });
       }
 
