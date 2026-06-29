@@ -225,6 +225,31 @@ describe("workflowActionsRule", () => {
     );
   });
 
+  it("flags secrets interpolated directly in multiline run commands", () => {
+    const context: RepoContext = {
+      rootDir: "/repo",
+      files: [],
+      workflows: [
+        {
+          path: ".github/workflows/release.yml",
+          content:
+            "on: push\njobs:\n  release:\n    steps:\n      - run: |\n          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}\n          npm publish\n",
+          data: {},
+        },
+      ],
+    };
+
+    const findings = workflowActionsRule.run(context);
+
+    expect(findings).toContainEqual(
+      expect.objectContaining({
+        ruleId: "workflow.secret-interpolation-in-run",
+        severity: "medium",
+        filePath: ".github/workflows/release.yml",
+      }),
+    );
+  });
+
   it("does not flag secrets passed through step env", () => {
     const context: RepoContext = {
       rootDir: "/repo",

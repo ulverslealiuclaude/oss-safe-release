@@ -10,12 +10,43 @@ const TOP_LEVEL_PERMISSIONS = /^permissions:\s*/m;
 const DOWNLOAD_ARTIFACT_ACTION = /uses:\s*actions\/download-artifact@/i;
 const CACHE_ACTION = /uses:\s*actions\/cache(?:\/(?:restore|save))?@/i;
 const DOCKER_LOGIN_PASSWORD_ARG = /\bdocker\s+login\b(?=[^\n]*(?:--password(?:\s+|=)|(?:^|\s)-p(?:\s+|=)))(?![^\n]*--password-stdin\b)/i;
-const SECRET_INTERPOLATION_IN_RUN = /^\s*-?\s*run:\s*[^\n]*\$\{\{\s*secrets\.[A-Z0-9_]+\s*\}\}/i;
+const RUN_STEP = /^(\s*)-?\s*run:\s*(.*)$/;
+const RUN_BLOCK_SCALAR = /^[|>][-+]?/;
+const SECRET_REFERENCE = /\$\{\{\s*secrets\.[A-Z0-9_]+\s*\}\}/i;
 const PACKAGE_NAME = "(?:@[a-z0-9_.-]+\\/)?[a-z0-9_.-]+";
 const UNPINNED_GLOBAL_INSTALL = new RegExp(
   `\\b(?:(?:npm|pnpm)\\s+(?:install|i|add)\\s+(?:--global|-g)\\s+${PACKAGE_NAME}|yarn\\s+global\\s+add\\s+${PACKAGE_NAME})(?:\\s|$)`,
   "i",
 );
+
+function indentation(line: string): number {
+  return line.match(/^\s*/)?.[0].length ?? 0;
+}
+
+function findSecretInterpolationInRunLine(content: string): string | undefined {
+  const lines = content.split(/\r?\n/);
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const runMatch = lines[index].match(RUN_STEP);
+    if (!runMatch) continue;
+
+    const runIndent = runMatch[1].length;
+    const runValue = runMatch[2].trim();
+    if (SECRET_REFERENCE.test(runValue)) return lines[index];
+    if (!RUN_BLOCK_SCALAR.test(runValue)) continue;
+
+    const firstScriptLine = lines.slice(index + 1).find((line) => line.trim() !== "" && indentation(line) > runIndent);
+    if (!firstScriptLine) continue;
+
+    const scriptIndent = indentation(firstScriptLine);
+    for (const line of lines.slice(index + 1)) {
+      if (line.trim() !== "" && indentation(line) < scriptIndent) break;
+      if (SECRET_REFERENCE.test(line)) return line;
+    }
+  }
+
+  return undefined;
+}
 
 export const workflowActionsRule: Rule = {
   id: "workflow-actions",
@@ -130,7 +161,7 @@ export const workflowActionsRule: Rule = {
         });
       }
 
-      const secretInterpolationInRunLine = workflow.content.split(/\r?\n/).find((line) => SECRET_INTERPOLATION_IN_RUN.test(line));
+      const secretInterpolationInRunLine = findSecretInterpolationInRunLine(workflow.content);
       if (secretInterpolationInRunLine) {
         findings.push({
           ruleId: "workflow.secret-interpolation-in-run",

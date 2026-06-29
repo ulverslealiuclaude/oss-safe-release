@@ -63,7 +63,7 @@ This catalog explains each built-in rule, why it matters to open-source maintain
 ### `workflow.secret-interpolation-in-run`
 
 - Severity: `medium`
-- Flags: `run:` commands that directly interpolate GitHub Actions secrets, such as `${{ secrets.NPM_TOKEN }}`.
+- Flags: single-line or multiline `run:` commands that directly interpolate GitHub Actions secrets, such as `${{ secrets.NPM_TOKEN }}`.
 - Risk: direct secret interpolation is easier to expose through command construction, process arguments, logs, or future shell edits.
 - Fix: pass secrets through step `env` and reference the environment variable inside the script.
 

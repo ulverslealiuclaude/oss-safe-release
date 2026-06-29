@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 - Added detection for untrusted GitHub event context interpolation in shell steps.
 - Added detection for workflows that pipe remote installer scripts directly into shells.
 - Added detection for `docker login` commands that pass passwords as command arguments.
-- Added detection for GitHub Actions secrets interpolated directly inside `run:` commands.
+- Added detection for GitHub Actions secrets interpolated directly inside single-line and multiline `run:` commands.
 - Added detection for workflows that globally install package-manager tools without fixed versions.
 - Added detection for reusable workflow calls that inherit all caller secrets.
 - Added detection for reusable workflows that accept secrets without explicit permissions.
