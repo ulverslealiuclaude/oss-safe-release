@@ -134,6 +134,8 @@ Release preparation is documented in [`docs/release.md`](docs/release.md). The f
 
 Security reporting and scanner limitations are documented in [`SECURITY.md`](SECURITY.md).
 
+Support boundaries and issue routing are documented in [`SUPPORT.md`](SUPPORT.md).
+
 ## GitHub Actions
 
 CI and SARIF upload examples are documented in [`docs/ci.md`](docs/ci.md). After publishing the package, use it in CI:

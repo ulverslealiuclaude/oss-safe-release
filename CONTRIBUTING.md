@@ -28,6 +28,10 @@ Good rules are high signal, explainable, and easy for maintainers to act on. Avo
 
 False-positive reports should include the rule id, sanitized finding output, and why the flagged pattern is safe or intentional. Do not include secrets, private repository contents, or credentials.
 
+## Support
+
+Support boundaries and issue routing are documented in [`SUPPORT.md`](SUPPORT.md).
+
 ## Requesting Rules
 
 Rule requests should describe the maintainer risk, provide a sanitized example pattern, and include the recommended fix a maintainer should apply.

@@ -45,6 +45,7 @@ node dist/src/cli.js scan . --markdown work/self-report.md --json work/self-repo
 - Confirm CI passes.
 - Apply public repository settings from `docs/repository-settings.md`.
 - Review `docs/release-drafts/v0.1.0.md` and use it as the GitHub Release body.
+- Confirm `SUPPORT.md` and `.github/CODEOWNERS` match the active maintainer account.
 - Add repository topics:
   - `github-actions`
   - `security`

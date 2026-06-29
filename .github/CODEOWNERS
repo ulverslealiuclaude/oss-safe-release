@@ -1,0 +1,16 @@
+# Default ownership for repository changes.
+* @ulverslealiuclaude
+
+# Scanner behavior and tests.
+/src/ @ulverslealiuclaude
+/tests/ @ulverslealiuclaude
+
+# GitHub workflow and repository automation.
+/.github/ @ulverslealiuclaude
+
+# Release and public documentation.
+/docs/ @ulverslealiuclaude
+/README.md @ulverslealiuclaude
+/CHANGELOG.md @ulverslealiuclaude
+/SECURITY.md @ulverslealiuclaude
+/SUPPORT.md @ulverslealiuclaude
